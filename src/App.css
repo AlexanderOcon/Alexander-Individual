@@ -1,0 +1,29 @@
+.margen-superior-main {
+margin-top: 50px;
+padding: 20px;
+}
+
+.color-navbar {
+background-color: #1068db !important;
+background-image: linear-gradient(90deg, #121b96 0%, #2889b6 50%, #2697cc 100%);
+}
+
+.color-texto-marca {
+color: #1e3d87 !important;
+font-size: 18px;
+}
+
+
+.estiloContenedor {
+  position: "fixed";
+  top: 0;
+  left: 0;
+  width: "100%";
+  height: "100%";
+  display: "flex";
+  justifyContent: "center";
+  alignItems: "center";
+  backgroundColor: "linear-gradient(135deg, #FFDEE9, #B5FFFC)";
+  overflow: "hidden";
+  padding: "20px";
+}
