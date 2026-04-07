@@ -5,7 +5,7 @@ const RutaProtregida = ({ children }) => {
 
   const estaLogeado= !! localStorage.getItem("usuario-supabase");
 
-  console.log("usario Autenticado" estaLogeado);
+  console.log("usario Autenticado", estaLogeado);
     return estaLogeado ? children : <Navigate to="/login" replace />;
 };
 

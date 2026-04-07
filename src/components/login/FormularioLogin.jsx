@@ -43,15 +43,19 @@ const FormularioLogin = ({usuario,contrasena, error, setUsuario, setContrasena, 
     );
 };
 
-<div style={estiloContenedor}>
-    <FormularioLogin
-        usuario={usuario}
-        contrasena={contrasena}
-        error={error}
-        setUsuario={setUsuario}
-        setContrasena={setContrasena}
-        IniciarSesion={IniciarSesion}
-    />
-</div>
+const estiloContenedor = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  backgroundColor: "linear-gradient(135deg, #FFDEE9, #B5FFFC)",
+  overflow: "hidden",
+  padding: "20px",
+};
+
 
 export default FormularioLogin; 
