@@ -6,10 +6,5 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     include: ["tslib"]
-  },
-  build: {
-    rollupOptions: {
-      external: ["tslib"]
-    }
   }
 })
