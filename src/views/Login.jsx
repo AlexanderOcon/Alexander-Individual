@@ -10,7 +10,7 @@ const Login = () => {
   const navegar = useNavigate();
 
   useEffect(() => {
-    const usuarioGuardado = localStorage.getItem("Usuario-supabase");
+    const usuarioGuardado = localStorage.getItem("usuario-supabase");
     if (usuarioGuardado) {
       navegar("/");
     }
@@ -28,7 +28,7 @@ const Login = () => {
         return;
       }
       if (data.user) {
-        localStorage.setItem("Usuario-supabase", usuario);
+        localStorage.setItem("usuario-supabase", usuario);
         navegar("/");
       }
     } catch (error) {
