@@ -104,14 +104,15 @@ const [mostrarMenu, setMostrarMenu] = useState(false);
             <hr />
 
             {/* Ícono cerrar sesión en barra superior */}
-            {!mostrarMenu ? null : (
+            
               <Nav.Link
                 onClick={cerrarSesion}
-                className={mostrarMenu ? "color-texto-marca" : "text-white"}
+                className="text-white"
+
               >
                 <i className="bi-box-arrow-right me-2"></i>
+                <strong> Cerrar sesión</strong>
               </Nav.Link>
-            )}
 
             <hr />
           </Nav>
