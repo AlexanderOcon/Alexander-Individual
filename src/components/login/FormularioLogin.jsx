@@ -4,8 +4,8 @@ import { Form, Button, Card, Alert } from "react-bootstrap";
 const FormularioLogin = ({usuario,contrasena,error,setUsuario,setContrasena,IniciarSesion,}) => {
     return (
     <Card
-    style={{ minWidth: "32@px", maxWidth: "4@@px", width: "100%" }}
-    className="p-4 shadow-1g"
+    style={{ minWidth: "300px", maxWidth: "350px", width: "100%" }}
+    className="p-4 shadow-lg"
     >
     <Card.Body>
         <h3 className="text-center mb-4">Iniciar Sesión </h3>

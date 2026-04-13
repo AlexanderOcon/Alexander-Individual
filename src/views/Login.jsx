@@ -38,10 +38,13 @@ const Login = () => {
   };
 
   const estiloContenedor = {
+    position: "fixed",
+    inset: 0,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    minHeight: "100vh",
+    backgroundColor: "#ffffff",
+    overflow: "hidden",
   };
 
   return (
