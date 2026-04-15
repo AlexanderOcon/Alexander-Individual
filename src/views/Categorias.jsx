@@ -1,8 +1,12 @@
-﻿import React, { useState } from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
+﻿import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
 import { supabase } from "../database/supabaseconfig";
 import ModalRegistroCategoria from "../components/categorias/ModalRegistroCategoria";
+import ModalEdicionCategoria from "../components/categorias/ModalEdicionCategoria";
+import ModalEliminacionCategoria from "../components/categorias/ModalEliminacionCategoria";
+import TablaCategorias from "../components/categorias/TablaCategorias";
 import NotificacionOperacion from "../components/NotificacionOperacion";
+
 
 const Categorias = () => {
   const [toast, setToast] = useState({ mostrar: false, mensaje: "", tipo: "" });
@@ -11,6 +15,81 @@ const Categorias = () => {
     nombre_categoria: "",
     descripcion_categoria: "",
   });
+
+  const [categorias, setCategorias] = useState([]);
+  const [cargando, setCargando] = useState(true); // Estado de carga inicial
+  const [mostrarModalEliminacion, setMostrarModalEliminacion] = useState(false);
+  const [categoriaAEliminar, setCategoriaAEliminar] = useState(null);
+  const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
+
+  const [categoriaEditar, setCategoriaEditar] = useState({
+    id_categoria: "",
+    nombre_categoria: "",
+    descripcion_categoria: "",
+  });
+
+  const cargarCategorias = async () => {
+    try {
+      setCargando(true);
+      const { data, error } = await supabase
+        .from("Categorias")
+        .select("*")
+        .order("id_categoria", { ascending: true });
+      if (error) {
+        console.error("Error al cargar categorías:", error.message);
+        setToast({
+          mostrar: true,
+          mensaje: "Error al cargar categorías.",
+          tipo: "error",
+        });
+        return;
+      }
+      setCategorias(
+        (data || []).map((item) => ({
+          ...item,
+          descripcion_categoria:
+            item.descripcion_categoria ?? item.descripcion ?? "",
+          nombre_categoria: item.nombre_categoria ?? item.nombre ?? "",
+        }))
+      );
+    } catch (err) {
+      console.error("Excepción al cargar categorías:", err.message);
+      setToast({
+        mostrar: true,
+        mensaje: "Error inesperado al cargar categorías.",
+        tipo: "error",
+      });
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  useEffect(() => {
+    cargarCategorias();
+  }, []);
+
+  const abrirModalEdicion = (categoria) => {
+    setCategoriaEditar({
+      id_categoria: categoria.id_categoria,
+      nombre_categoria: categoria.nombre_categoria,
+      descripcion_categoria:
+        categoria.descripcion_categoria ?? categoria.descripcion ?? "",
+    });
+    setMostrarModalEdicion(true);
+  };
+
+  const abrirModalEliminacion = (categoria) => {
+    setCategoriaAEliminar(categoria);
+    setMostrarModalEliminacion(true);
+  };
+
+  const manejoCambioInputEdicion = (e) => {
+    const { name, value } = e.target;
+    setCategoriaEditar((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const manejoCambioInput = (e) => {
     const { name, value } = e.target;
@@ -63,6 +142,8 @@ const Categorias = () => {
         tipo: "exito",
       });
 
+      await cargarCategorias();
+
       // Limpiar formulario y cerrar modal
       setNuevaCategoria({ nombre_categoria: "", descripcion_categoria: "" });
       setMostrarModal(false);
@@ -71,6 +152,96 @@ const Categorias = () => {
       setToast({
         mostrar: true,
         mensaje: "Error inesperado al registrar categoría.",
+        tipo: "error",
+      });
+    }
+  };
+
+  const actualizarCategoria = async () => {
+    try {
+      if (
+        !categoriaEditar.nombre_categoria.trim() ||
+        !categoriaEditar.descripcion_categoria.trim()
+      ) {
+        setToast({
+          mostrar: true,
+          mensaje: "Debe llenar todos los campos.",
+          tipo: "advertencia",
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from("Categorias")
+        .update({
+          nombre_categoria: categoriaEditar.nombre_categoria,
+          descripcion: categoriaEditar.descripcion_categoria,
+        })
+        .eq("id_categoria", categoriaEditar.id_categoria)
+        .select();
+
+      if (error) {
+        console.error("Error al actualizar categoría:", error.message);
+        setToast({
+          mostrar: true,
+          mensaje: "Error al actualizar categoría.",
+          tipo: "error",
+        });
+        return;
+      }
+
+      setToast({
+        mostrar: true,
+        mensaje: `Categoría "${categoriaEditar.nombre_categoria}" actualizada exitosamente.`,
+        tipo: "exito",
+      });
+
+      await cargarCategorias();
+      setMostrarModalEdicion(false);
+    } catch (err) {
+      console.error("Excepción al actualizar categoría:", err.message);
+      setToast({
+        mostrar: true,
+        mensaje: "Error inesperado al actualizar categoría.",
+        tipo: "error",
+      });
+    }
+  };
+
+  const eliminarCategoria = async () => {
+    try {
+      if (!categoriaAEliminar) return;
+
+      const { data, error } = await supabase
+        .from("Categorias")
+        .delete()
+        .eq("id_categoria", categoriaAEliminar.id_categoria)
+        .select();
+
+      if (error) {
+        console.error("Error al eliminar categoría:", error.message);
+        setToast({
+          mostrar: true,
+          mensaje: "Error al eliminar categoría.",
+          tipo: "error",
+        });
+        return;
+      }
+
+      setToast({
+        mostrar: true,
+        mensaje: `Categoría "${categoriaAEliminar.nombre_categoria}" eliminada exitosamente.`,
+        tipo: "exito",
+      });
+
+      await cargarCategorias();
+      setMostrarModalEliminacion(false);
+      setCategoriaAEliminar(null);
+    } catch (err) {
+      console.error("Excepción al eliminar categoría:", err.message);
+      setToast({
+        mostrar: true,
+        mensaje: "Error inesperado al eliminar categoría.",
         tipo: "error",
       });
     }
@@ -95,6 +266,29 @@ const Categorias = () => {
 
       <hr />
 
+      {/* Spinner mientras se cargan las categorías */}
+      {cargando && (
+        <Row className="text-center my-5">
+          <Col>
+            <Spinner animation="border" variant="success" size="lg" />
+            <p className="mt-3 text-muted">Cargando categorías...</p>
+          </Col>
+        </Row>
+      )}
+
+      {/* Lista de categorías cargadas */}
+      {!cargando && categorias.length > 0 && (
+        <Row>
+          <Col lg={12}>
+            <TablaCategorias
+              categorias={categorias}
+              abrirModalEdicion={abrirModalEdicion}
+              abrirModalEliminacion={abrirModalEliminacion}
+            />
+          </Col>
+        </Row>
+      )}
+
       {/* Modal de Registro */}
       <ModalRegistroCategoria
         mostrarModal={mostrarModal}
@@ -102,6 +296,23 @@ const Categorias = () => {
         nuevaCategoria={nuevaCategoria}
         manejoCambioInput={manejoCambioInput}
         agregarCategoria={agregarCategoria}
+      />
+
+      {/* Modal de Edición */}
+      <ModalEdicionCategoria
+        mostrarModal={mostrarModalEdicion}
+        setMostrarModal={setMostrarModalEdicion}
+        categoriaEditar={categoriaEditar}
+        manejoCambioInput={manejoCambioInputEdicion}
+        actualizarCategoria={actualizarCategoria}
+      />
+
+      {/* Modal de Eliminación */}
+      <ModalEliminacionCategoria
+        mostrarModal={mostrarModalEliminacion}
+        setMostrarModal={setMostrarModalEliminacion}
+        categoriaAEliminar={categoriaAEliminar}
+        eliminarCategoria={eliminarCategoria}
       />
 
       {/* Notificación */}
