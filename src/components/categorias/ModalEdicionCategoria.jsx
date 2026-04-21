@@ -1,11 +1,12 @@
+// Brandon Alexander Hermida Ocon - 21/04/2026 11:00 am
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 
 const ModalEdicionCategoria = ({
-  mostrarModal,
-  setMostrarModal,
+  mostrarModalEdicion,
+  setMostrarModalEdicion,
   categoriaEditar,
-  manejoCambioInput,
+  manejoCambioInputEdicion,
   actualizarCategoria,
 }) => {
   const [deshabilitado, setDeshabilitado] = useState(false);
@@ -19,8 +20,8 @@ const ModalEdicionCategoria = ({
 
   return (
     <Modal
-      show={mostrarModal}
-      onHide={() => setMostrarModal(false)}
+      show={mostrarModalEdicion}
+      onHide={() => setMostrarModalEdicion(false)}
       backdrop="static"
       keyboard={false}
       centered
@@ -36,7 +37,7 @@ const ModalEdicionCategoria = ({
               type="text"
               name="nombre_categoria"
               value={categoriaEditar.nombre_categoria}
-              onChange={manejoCambioInput}
+              onChange={manejoCambioInputEdicion}
               placeholder="Ingresa el nombre"
             />
           </Form.Group>
@@ -47,14 +48,18 @@ const ModalEdicionCategoria = ({
               rows={3}
               name="descripcion_categoria"
               value={categoriaEditar.descripcion_categoria}
-              onChange={manejoCambioInput}
+              onChange={manejoCambioInputEdicion}
               placeholder="Ingresa la descripción"
             />
           </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => setMostrarModal(false)} disabled={deshabilitado}>
+        <Button
+          variant="secondary"
+          onClick={() => setMostrarModalEdicion(false)}
+          disabled={deshabilitado}
+        >
           Cancelar
         </Button>
         <Button
@@ -74,3 +79,4 @@ const ModalEdicionCategoria = ({
 };
 
 export default ModalEdicionCategoria;
+// Brandon Alexander Hermida Ocon - 21/04/2026 11:00 am

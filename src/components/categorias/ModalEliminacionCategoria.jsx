@@ -1,9 +1,10 @@
+// Brandon Alexander Hermida Ocon - 21/04/2026 11:00 am
 import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 
 const ModalEliminacionCategoria = ({
-  mostrarModal,
-  setMostrarModal,
+  mostrarModalEliminacion,
+  setMostrarModalEliminacion,
   categoriaAEliminar,
   eliminarCategoria,
 }) => {
@@ -18,25 +19,31 @@ const ModalEliminacionCategoria = ({
 
   return (
     <Modal
-      show={mostrarModal}
-      onHide={() => setMostrarModal(false)}
+      show={mostrarModalEliminacion}
+      onHide={() => setMostrarModalEliminacion(false)}
       backdrop="static"
       keyboard={false}
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title>Eliminar Categoría</Modal.Title>
+        <Modal.Title>Confirmar Eliminacion</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>
-          ¿Estás seguro de eliminar la categoría "{categoriaAEliminar?.nombre_categoria}"?
-        </p>
+        ¿Estás seguro de eliminar la categoría "
+        <strong>{categoriaAEliminar?.nombre_categoria}</strong>"?
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => setMostrarModal(false)} disabled={deshabilitado}>
+        <Button
+          variant="secondary"
+          onClick={() => setMostrarModalEliminacion(false)}
+        >
           Cancelar
         </Button>
-        <Button variant="danger" onClick={handleEliminar} disabled={deshabilitado}>
+        <Button
+          variant="danger"
+          onClick={handleEliminar}
+          disabled={deshabilitado}
+        >
           Eliminar
         </Button>
       </Modal.Footer>
@@ -45,3 +52,4 @@ const ModalEliminacionCategoria = ({
 };
 
 export default ModalEliminacionCategoria;
+// Brandon Alexander Hermida Ocon - 21/04/2026 11:00 am
