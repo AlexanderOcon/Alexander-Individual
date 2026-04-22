@@ -7,6 +7,7 @@ import ModalRegistroCategoria from "../components/categorias/ModalRegistroCatego
 import ModalEdicionCategoria from "../components/categorias/ModalEdicionCategoria";
 import ModalEliminacionCategoria from "../components/categorias/ModalEliminacionCategoria";
 import TablaCategorias from "../components/categorias/TablaCategorias";
+import TarjetaCategoria from "../components/categorias/TarjetaCategoria";
 import NotificacionOperacion from "../components/NotificacionOperacion";
 
 const Categorias = () => {
@@ -277,10 +278,18 @@ const Categorias = () => {
         </Row>
       )}
 
+      <Col xs={12} sm={12} md={12} className="d-lg-none">
+        <TarjetaCategoria
+          categorias={categorias}
+          abrirModalEdicion={abrirModalEdicion}
+          abrirModalEliminacion={abrirModalEliminacion}
+        />
+      </Col>
+
       {/* Lista de categorías cargadas */}
       {!cargando && categorias.length > 0 && (
         <Row>
-          <Col lg={12}>
+          <Col lg={12}className="d-none d-lg-block">
             <TablaCategorias
               categorias={categorias}
               abrirModalEdicion={abrirModalEdicion}
