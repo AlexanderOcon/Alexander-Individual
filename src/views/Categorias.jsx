@@ -1,7 +1,7 @@
 ﻿// Brandon Alexander Hermida Ocon - 21/04/2026 11:00 am
 
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
+import { Container, Row, Col, Button, Spinner, Alert } from "react-bootstrap";
 import { supabase } from "../database/supabaseconfig";
 import ModalRegistroCategoria from "../components/categorias/ModalRegistroCategoria";
 import ModalEdicionCategoria from "../components/categorias/ModalEdicionCategoria";
@@ -9,6 +9,8 @@ import ModalEliminacionCategoria from "../components/categorias/ModalEliminacion
 import TablaCategorias from "../components/categorias/TablaCategorias";
 import TarjetaCategoria from "../components/categorias/TarjetaCategoria";
 import NotificacionOperacion from "../components/NotificacionOperacion";
+import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
+import Paginacion from "../components/ordenamiento/Paginacion";
 
 const Categorias = () => {
   const [toast, setToast] = useState({ mostrar: false, mensaje: "", tipo: "" });
@@ -17,6 +19,21 @@ const Categorias = () => {
     nombre_categoria: "",
     descripcion_categoria: "",
   });
+
+  const [textoBusqueda, setTextoBusqueda] = useState("");
+  const [categoriasFiltradas, setCategoriasFiltradas] = useState([]);
+
+  const manejarBusqueda = (e) => {
+    setTextoBusqueda(e.target.value);
+  };
+
+  const [registrosPorPagina, establecerRegistrosPorPagina] = useState(5); // Registros por página
+  const [paginaActual, establecerPaginaActual] = useState(1);
+
+  const categoriasPaginadas = categoriasFiltradas.slice(
+    (paginaActual - 1) * registrosPorPagina,
+    paginaActual * registrosPorPagina
+  );
 
   const [categorias, setCategorias] = useState([]);
   const [cargando, setCargando] = useState(true); // Estado de carga inicial
@@ -69,6 +86,21 @@ const Categorias = () => {
   useEffect(() => {
     cargarCategorias();
   }, []);
+
+
+  useEffect(() => {
+    if (!textoBusqueda.trim()) {
+      setCategoriasFiltradas(categorias);
+    } else {
+      const textoLower = textoBusqueda.toLowerCase().trim();
+      const filtradas = categorias.filter(
+        (cat) =>
+          cat.nombre_categoria.toLowerCase().includes(textoLower) ||
+          (cat.descripcion_categoria && cat.descripcion_categoria.toLowerCase().includes(textoLower))
+      );
+      setCategoriasFiltradas(filtradas);
+    }
+  }, [textoBusqueda, categorias]);
 
   const abrirModalEdicion = (categoria) => {
     setCategoriaEditar({
@@ -268,6 +300,49 @@ const Categorias = () => {
 
       <hr />
 
+      {/* Cuadro de busqueda */}
+      <Row className="mb-4">
+        <Col md={6} lg={5}>
+          <CuadroBusquedas
+            textoBusqueda={textoBusqueda}
+            manejarCambioBusqueda={manejarBusqueda}
+            placeholder="Buscar por nombre o descripción..."
+          />
+        </Col>
+      </Row>
+
+      {/* Mensaje cuando no se encuentran categorías */}
+      {!cargando && textoBusqueda.trim() && categoriasFiltradas.length === 0 && (
+          <Row className="mb-4">
+            <Col>
+              <Alert variant="info" className="text-center">
+                <i className="bi-info-circle me-2"></i>
+                No se encontraron categorías que coincidan con la búsqueda.
+              </Alert>
+            </Col>
+          </Row>
+        )}
+
+      {}
+      {!cargando && textoBusqueda.trim() && categoriasFiltradas.length > 0 && (
+        <Row>
+          <Col xs={12} sm={12} md={12} className="d-lg-none">
+            <TarjetaCategoria
+              categorias={categoriasPaginadas}
+              abrirModalEdicion={abrirModalEdicion}
+              abrirModalEliminacion={abrirModalEliminacion}
+            />
+          </Col>
+          <Col lg={12} className="d-none d-lg-block">
+            <TablaCategorias
+              categorias={categoriasFiltradas}
+              abrirModalEdicion={abrirModalEdicion}
+              abrirModalEliminacion={abrirModalEliminacion}
+            />
+          </Col>
+        </Row>
+      )}
+
       {/* Spinner mientras se cargan las categorías */}
       {cargando && (
         <Row className="text-center my-5">
@@ -278,18 +353,17 @@ const Categorias = () => {
         </Row>
       )}
 
-      <Col xs={12} sm={12} md={12} className="d-lg-none">
-        <TarjetaCategoria
-          categorias={categorias}
-          abrirModalEdicion={abrirModalEdicion}
-          abrirModalEliminacion={abrirModalEliminacion}
-        />
-      </Col>
-
-      {/* Lista de categorías cargadas */}
-      {!cargando && categorias.length > 0 && (
+      {/* Lista por defecto (sin búsqueda) */}
+      {!cargando && !textoBusqueda.trim() && categorias.length > 0 && (
         <Row>
-          <Col lg={12}className="d-none d-lg-block">
+          <Col xs={12} sm={12} md={12} className="d-lg-none">
+            <TarjetaCategoria
+              categorias={categoriasPaginadas}
+              abrirModalEdicion={abrirModalEdicion}
+              abrirModalEliminacion={abrirModalEliminacion}
+            />
+          </Col>
+          <Col lg={12} className="d-none d-lg-block">
             <TablaCategorias
               categorias={categorias}
               abrirModalEdicion={abrirModalEdicion}
@@ -324,6 +398,17 @@ const Categorias = () => {
         eliminarCategoria={eliminarCategoria}
         categoria={categoriaAEliminar}
       />
+
+      {/* Paginación */}
+      {categoriasFiltradas.length > 0 && (
+        <Paginacion
+          registrosPorPagina={registrosPorPagina}
+          totalRegistros={categoriasFiltradas.length}
+          paginaActual={paginaActual}
+          establecerPaginaActual={establecerPaginaActual}
+          establecerRegistrosPorPagina={establecerRegistrosPorPagina}
+        />
+      )}
 
       {/* Notificación */}
       <NotificacionOperacion
