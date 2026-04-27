@@ -32,7 +32,7 @@ const Categorias = () => {
 
   const categoriasPaginadas = categoriasFiltradas.slice(
     (paginaActual - 1) * registrosPorPagina,
-    paginaActual * registrosPorPagina
+    paginaActual * registrosPorPagina,
   );
 
   const [categorias, setCategorias] = useState([]);
@@ -87,7 +87,6 @@ const Categorias = () => {
     cargarCategorias();
   }, []);
 
-
   useEffect(() => {
     if (!textoBusqueda.trim()) {
       setCategoriasFiltradas(categorias);
@@ -96,7 +95,8 @@ const Categorias = () => {
       const filtradas = categorias.filter(
         (cat) =>
           cat.nombre_categoria.toLowerCase().includes(textoLower) ||
-          (cat.descripcion_categoria && cat.descripcion_categoria.toLowerCase().includes(textoLower))
+          (cat.descripcion_categoria &&
+            cat.descripcion_categoria.toLowerCase().includes(textoLower)),
       );
       setCategoriasFiltradas(filtradas);
     }
@@ -312,7 +312,9 @@ const Categorias = () => {
       </Row>
 
       {/* Mensaje cuando no se encuentran categorías */}
-      {!cargando && textoBusqueda.trim() && categoriasFiltradas.length === 0 && (
+      {!cargando &&
+        textoBusqueda.trim() &&
+        categoriasFiltradas.length === 0 && (
           <Row className="mb-4">
             <Col>
               <Alert variant="info" className="text-center">
