@@ -82,7 +82,10 @@ const Productos = () => {
   }, [textoBusqueda, productos]);
 
   useEffect(() => {
-    const totalPaginas = Math.max(1, Math.ceil((productosFiltrados.length || 0) / registrosPorPagina));
+    const totalPaginas = Math.max(
+      1,
+      Math.ceil((productosFiltrados.length || 0) / registrosPorPagina),
+    );
     if (paginaActual > totalPaginas) {
       establecerPaginaActual(1);
     }
@@ -146,46 +149,51 @@ const Productos = () => {
 
       const { error: uploadError } = await supabase.storage
         .from("imagenes_productos")
-        .upload(nombreArchivo, nuevoProducto.archivo, {
+        .upload(nombreArchivo, nuevoProducto.archivo, {});
 
-        });
+      if (uploadError) throw uploadError;
 
-      if (uploadError) throw uploadError; 
-
-        const {data: urlData} = await supabase.storage
+      const { data: urlData } = await supabase.storage
         .from("imagenes_productos")
         .getPublicUrl(nombreArchivo);
-        const urlPublica = urlData.publicUrl;
+      const urlPublica = urlData.publicUrl;
 
-        const { error } = await supabase.from("Productos").insert([
-          {
-            nombre_producto: nuevoProducto.nombre_producto,
-            descripcion_producto: nuevoProducto.descripcion_producto || null,
-            categoria_producto: nuevoProducto.categoria_producto,
-            precio_venta: parseFloat(nuevoProducto.precio_venta),
-            url_imagen: urlPublica,
-          },
-        ]);
+      const { error } = await supabase.from("Productos").insert([
+        {
+          nombre_producto: nuevoProducto.nombre_producto,
+          descripcion_producto: nuevoProducto.descripcion_producto || null,
+          categoria_producto: nuevoProducto.categoria_producto,
+          precio_venta: parseFloat(nuevoProducto.precio_venta),
+          url_imagen: urlPublica,
+        },
+      ]);
 
-        if (error) throw error;
+      if (error) throw error;
 
-        // Recargar la lista de productos
-        await cargarProductos();
+      // Recargar la lista de productos
+      await cargarProductos();
 
-        setNuevoProducto({
-          nombre_producto: "",
-          descripcion_producto: "",
-          categoria_producto: "",
-          precio_venta: "",
-          archivo: null,
-        });
-        
-        setToast({ mostrar: true, mensaje: "Producto registrado correctamente", tipo: "exito" });
+      setNuevoProducto({
+        nombre_producto: "",
+        descripcion_producto: "",
+        categoria_producto: "",
+        precio_venta: "",
+        archivo: null,
+      });
 
-      }catch (err) {
-        console.error("Error al agregar producto:", err);
-        setToast({ mostrar: true, mensaje: "Error al registrar producto", tipo: "error" });
-      }
+      setToast({
+        mostrar: true,
+        mensaje: "Producto registrado correctamente",
+        tipo: "exito",
+      });
+    } catch (err) {
+      console.error("Error al agregar producto:", err);
+      setToast({
+        mostrar: true,
+        mensaje: "Error al registrar producto",
+        tipo: "error",
+      });
+    }
   };
 
   const abrirModalEdicion = (producto) => {
@@ -194,7 +202,8 @@ const Productos = () => {
       nombre_producto: producto.nombre_producto ?? producto.nombre ?? "",
       descripcion_producto:
         producto.descripcion_producto ?? producto.descripcion ?? "",
-      categoria_producto: producto.categoria_producto ?? producto.categoria ?? "",
+      categoria_producto:
+        producto.categoria_producto ?? producto.categoria ?? "",
       precio_venta: producto.precio_venta ?? producto.precio ?? "",
       url_imagen: producto.url_imagen ?? producto.imagen ?? "",
       archivo: null,
@@ -228,7 +237,11 @@ const Productos = () => {
         !productoEditar.categoria_producto ||
         !productoEditar.precio_venta
       ) {
-        setToast({ mostrar: true, mensaje: "Complete los campos obligatorios", tipo: "advertencia" });
+        setToast({
+          mostrar: true,
+          mensaje: "Complete los campos obligatorios",
+          tipo: "advertencia",
+        });
         return;
       }
 
@@ -240,9 +253,7 @@ const Productos = () => {
         const nombreArchivo = `${Date.now()}_${productoEditar.archivo.name}`;
         const { error: uploadError } = await supabase.storage
           .from("imagenes_productos")
-          .upload(nombreArchivo, productoEditar.archivo, {
-
-          });
+          .upload(nombreArchivo, productoEditar.archivo, {});
         if (uploadError) throw uploadError;
 
         const { data: urlData } = await supabase.storage
@@ -266,10 +277,18 @@ const Productos = () => {
       if (error) throw error;
 
       await cargarProductos();
-      setToast({ mostrar: true, mensaje: "Producto actualizado correctamente", tipo: "exito" });
+      setToast({
+        mostrar: true,
+        mensaje: "Producto actualizado correctamente",
+        tipo: "exito",
+      });
     } catch (err) {
       console.error("Error al actualizar producto:", err);
-      setToast({ mostrar: true, mensaje: "Error al actualizar producto", tipo: "error" });
+      setToast({
+        mostrar: true,
+        mensaje: "Error al actualizar producto",
+        tipo: "error",
+      });
     }
   };
 
@@ -286,18 +305,24 @@ const Productos = () => {
       if (error) throw error;
 
       await cargarProductos();
-      setToast({ mostrar: true, mensaje: `Producto "${productoAEliminar.nombre_producto}" eliminado`, tipo: "exito" });
+      setToast({
+        mostrar: true,
+        mensaje: `Producto "${productoAEliminar.nombre_producto}" eliminado`,
+        tipo: "exito",
+      });
     } catch (err) {
       console.error("Error al eliminar producto:", err);
-      setToast({ mostrar: true, mensaje: "Error al eliminar producto", tipo: "error" });
+      setToast({
+        mostrar: true,
+        mensaje: "Error al eliminar producto",
+        tipo: "error",
+      });
     }
   };
 
   return (
     <Container className="mt-3">
-
       <Row className="align-items-center mb-3">
-
         <Col className="d-flex align-items-center">
           <h3 className="mb-0">
             <i className="bi-bag-heart-fill me-2"></i> Productos
@@ -327,7 +352,10 @@ const Productos = () => {
       <Row>
         <Col>
           <TablaProductos
-            productos={productosFiltrados.slice((paginaActual - 1) * registrosPorPagina, paginaActual * registrosPorPagina)}
+            productos={productosFiltrados.slice(
+              (paginaActual - 1) * registrosPorPagina,
+              paginaActual * registrosPorPagina,
+            )}
             categorias={categorias}
             cargando={cargando}
             abrirModalEdicion={abrirModalEdicion}

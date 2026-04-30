@@ -39,7 +39,11 @@ const ModalEliminacionProducto = ({
         >
           Cancelar
         </Button>
-        <Button variant="danger" onClick={handleEliminar} disabled={deshabilitado}>
+        <Button
+          variant="danger"
+          onClick={handleEliminar}
+          disabled={deshabilitado}
+        >
           Eliminar
         </Button>
       </Modal.Footer>

@@ -1,8 +1,13 @@
 import React from "react";
 import { Table, Spinner, Button } from "react-bootstrap";
 
-const TablaProductos = ({ productos, categorias, abrirModalEdicion, abrirModalEliminacion, cargando }) => {
-
+const TablaProductos = ({
+  productos,
+  categorias,
+  abrirModalEdicion,
+  abrirModalEliminacion,
+  cargando,
+}) => {
   const obtenerNombreCategoria = (id) => {
     const cat = categorias?.find((c) => c.id_categoria === id);
     return cat ? cat.nombre_categoria : id;
@@ -32,20 +37,37 @@ const TablaProductos = ({ productos, categorias, abrirModalEdicion, abrirModalEl
               <tr key={p.id_producto}>
                 <td>{p.id_producto}</td>
                 <td>{p.nombre_producto}</td>
-                <td className="d-none d-md-table-cell">{obtenerNombreCategoria(p.categoria_producto)}</td>
+                <td className="d-none d-md-table-cell">
+                  {obtenerNombreCategoria(p.categoria_producto)}
+                </td>
                 <td>{p.precio_venta}</td>
                 <td className="d-none d-md-table-cell">
                   {p.url_imagen ? (
-                    <img src={p.url_imagen} alt={p.nombre_producto} style={{ width: 80, height: 60, objectFit: 'cover' }} />
+                    <img
+                      src={p.url_imagen}
+                      alt={p.nombre_producto}
+                      style={{ width: 80, height: 60, objectFit: "cover" }}
+                    />
                   ) : (
                     "-"
                   )}
                 </td>
                 <td className="text-center">
-                  <Button variant="outline-warning" size="sm" className="m-1" onClick={() => abrirModalEdicion && abrirModalEdicion(p)}>
+                  <Button
+                    variant="outline-warning"
+                    size="sm"
+                    className="m-1"
+                    onClick={() => abrirModalEdicion && abrirModalEdicion(p)}
+                  >
                     <i className="bi bi-pencil"></i>
                   </Button>
-                  <Button variant="outline-danger" size="sm" onClick={() => abrirModalEliminacion && abrirModalEliminacion(p)}>
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    onClick={() =>
+                      abrirModalEliminacion && abrirModalEliminacion(p)
+                    }
+                  >
                     <i className="bi bi-trash"></i>
                   </Button>
                 </td>
