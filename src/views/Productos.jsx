@@ -8,6 +8,7 @@ import ModalEliminacionProducto from "../components/productos/ModalEliminacionPr
 import Paginacion from "../components/ordenamiento/Paginacion";
 import NotificacionOperacion from "../components/NotificacionOperacion";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
+import TarjetaProducto from "../components/productos/TarjetasProductos";
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);
@@ -28,6 +29,14 @@ const Productos = () => {
     archivo: null,
   });
 
+  const [registrosPorPagina, establecerRegistrosPorPagina] = useState(5); // Registros por página
+  const [paginaActual, establecerPaginaActual] = useState(1);
+
+  const productosPaginados = productosFiltrados.slice(
+    (paginaActual - 1) * registrosPorPagina,
+    paginaActual * registrosPorPagina,
+  );
+
   const [productoEditar, setProductoEditar] = useState({
     id_producto: "",
     nombre_producto: "",
@@ -40,8 +49,6 @@ const Productos = () => {
 
   const [productoAEliminar, setProductoAEliminar] = useState(null);
   const [toast, setToast] = useState({ mostrar: false, mensaje: "", tipo: "" });
-  const [registrosPorPagina, establecerRegistrosPorPagina] = useState(5);
-  const [paginaActual, establecerPaginaActual] = useState(1);
 
   const manejoCambioInput = (e) => {
     const { name, value } = e.target;
@@ -350,7 +357,18 @@ const Productos = () => {
       </Row>
 
       <Row>
-        <Col>
+        <Col xs={12} sm={12} md={12} className="d-lg-none">
+          <TarjetaProducto
+            productos={productosFiltrados}
+            categorias={categorias}
+            abrirModalEdicion={abrirModalEdicion}
+            abrirModalEliminacion={abrirModalEliminacion}
+          />
+        </Col>
+      </Row>
+
+      <Row>
+        <Col className="d-none d-lg-block">
           <TablaProductos
             productos={productosFiltrados.slice(
               (paginaActual - 1) * registrosPorPagina,
