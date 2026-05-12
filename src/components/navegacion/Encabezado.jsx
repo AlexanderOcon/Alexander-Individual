@@ -85,6 +85,14 @@ const [mostrarMenu, setMostrarMenu] = useState(false);
             </Nav.Link>
 
             <Nav.Link
+              onClick={() => manejarNavegacion("/empleados")}
+              className={mostrarMenu ? "color-texto-marca" : "text-white"}
+            >
+              {mostrarMenu ? <i className="bi-person-badge-fill me-2"></i> : null}
+              <strong>Empleados</strong>
+            </Nav.Link>
+
+            <Nav.Link
               onClick={() => manejarNavegacion("/productos")}
               className={mostrarMenu ? "color-texto-marca" : "text-white"}
             >
