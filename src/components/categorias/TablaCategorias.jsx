@@ -6,6 +6,7 @@ const TablaCategorias = ({
   categorias,
   abrirModalEdicion,
   abrirModalEliminacion,
+  generarPDFCategoria,
 }) => {
   const [Loading, setLoading] = useState(true);
 
@@ -40,7 +41,9 @@ const TablaCategorias = ({
                 <td>{categoria.id_categoria}</td>
                 <td>{categoria.nombre_categoria}</td>
                 <td className="d-none d-md-table-cell">
-                  {categoria.descripcion_categoria || categoria.descripcion || ""}
+                  {categoria.descripcion_categoria ||
+                    categoria.descripcion ||
+                    ""}
                 </td>
                 <td className="text-center">
                   <Button
@@ -54,9 +57,18 @@ const TablaCategorias = ({
                   <Button
                     variant="outline-danger"
                     size="sm"
+                    className="m-1"
                     onClick={() => abrirModalEliminacion(categoria)}
                   >
                     <i className="bi bi-trash"></i>
+                  </Button>
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    className="m-1"
+                    onClick={() => generarPDFCategoria(categoria)}
+                  >
+                    <i className="bi bi-file-earmark-pdf"></i>
                   </Button>
                 </td>
               </tr>

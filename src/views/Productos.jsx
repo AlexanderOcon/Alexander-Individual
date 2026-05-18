@@ -9,6 +9,8 @@ import Paginacion from "../components/ordenamiento/Paginacion";
 import NotificacionOperacion from "../components/NotificacionOperacion";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
 import TarjetaProducto from "../components/productos/TarjetasProductos";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);
@@ -327,16 +329,191 @@ const Productos = () => {
     }
   };
 
+  const generarPDFProducto = (producto) => {
+    try {
+      const doc = new jsPDF();
+
+      // Título
+      doc.setFontSize(18);
+      doc.setFont(undefined, "bold");
+      doc.text("Reporte de Producto", 14, 20);
+
+      // Línea decorativa
+      doc.setDrawColor(0, 102, 204);
+      doc.setLineWidth(0.5);
+      doc.line(14, 25, 195, 25);
+
+      let yPosition = 35;
+
+      // Imagen del producto
+      if (producto.url_imagen) {
+        try {
+          doc.addImage(producto.url_imagen, "JPEG", 14, yPosition, 50, 50);
+          yPosition += 55;
+        } catch (err) {
+          console.error("Error al cargar imagen:", err);
+          yPosition += 10;
+        }
+      }
+
+      // Información del producto
+      doc.setFontSize(12);
+      doc.setFont(undefined, "normal");
+
+      autoTable(doc, {
+        startY: yPosition,
+        head: [["Campo", "Valor"]],
+        body: [
+          ["ID", producto.id_producto],
+          ["Nombre", producto.nombre_producto],
+          ["Descripción", producto.descripcion_producto || "N/A"],
+          ["Categoría", producto.categoria_producto],
+          ["Precio", `$${producto.precio_venta}`],
+        ],
+      });
+
+      // Descargar PDF
+      doc.save(`producto_${producto.id_producto}.pdf`);
+
+      setToast({
+        mostrar: true,
+        mensaje: "PDF generado correctamente",
+        tipo: "exito",
+      });
+    } catch (err) {
+      console.error("Error al generar PDF:", err);
+      setToast({
+        mostrar: true,
+        mensaje: "Error al generar PDF",
+        tipo: "error",
+      });
+    }
+  };
+
+  const generarPDFGeneralProductos = async () => {
+    try {
+      const doc = new jsPDF("p", "mm", "a4");
+      const ahora = new Date();
+      const fecha = ahora.toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+
+      // Título principal
+      doc.setFontSize(20);
+      doc.setFont(undefined, "bold");
+      doc.text("Catálogo de Productos", 14, 20);
+
+      // Fecha de generación
+      doc.setFontSize(10);
+      doc.setFont(undefined, "normal");
+      doc.text(`Generado: ${fecha}`, 14, 28);
+      doc.text(`Total de productos: ${productos.length}`, 14, 34);
+
+      // Línea decorativa
+      doc.setDrawColor(0, 102, 204);
+      doc.setLineWidth(0.5);
+      doc.line(14, 38, 195, 38);
+
+      let yPosition = 45;
+      const pageHeight = doc.internal.pageSize.height;
+
+      // Recorrer cada producto
+      for (let i = 0; i < productos.length; i++) {
+        const producto = productos[i];
+
+        // Verificar si necesitamos una nueva página
+        if (yPosition > pageHeight - 60) {
+          doc.addPage();
+          yPosition = 20;
+        }
+
+        // Nombre del producto en negrita
+        doc.setFontSize(12);
+        doc.setFont(undefined, "bold");
+        doc.text(`${producto.nombre_producto}`, 14, yPosition);
+        yPosition += 6;
+
+        // Agregar imagen si existe
+        if (producto.url_imagen) {
+          try {
+            doc.addImage(producto.url_imagen, "JPEG", 14, yPosition, 45, 35);
+          } catch (err) {
+            console.error("Error al cargar imagen:", err);
+          }
+        }
+
+        // Información al lado de la imagen
+        doc.setFontSize(9);
+        doc.setFont(undefined, "normal");
+
+        const infoX = producto.url_imagen ? 65 : 14;
+
+        doc.text(`ID: ${producto.id_producto}`, infoX, yPosition);
+        doc.text(
+          `Categoría: ${producto.categoria_producto}`,
+          infoX,
+          yPosition + 6,
+        );
+        doc.text(`Precio: $${producto.precio_venta}`, infoX, yPosition + 12);
+
+        // Descripción con saltos de línea
+        const descLines = doc.splitTextToSize(
+          `Descripción: ${producto.descripcion_producto || "N/A"}`,
+          130 - infoX + 14,
+        );
+        doc.text(descLines, infoX, yPosition + 18);
+
+        // Línea separadora
+        yPosition = Math.max(
+          yPosition + 40,
+          yPosition + descLines.length * 4 + 20,
+        );
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.2);
+        doc.line(14, yPosition, 195, yPosition);
+        yPosition += 5;
+      }
+
+      // Descargar PDF
+      doc.save(`Catalogo_Productos_${ahora.getTime()}.pdf`);
+
+      setToast({
+        mostrar: true,
+        mensaje: "Catálogo de productos descargado correctamente",
+        tipo: "exito",
+      });
+    } catch (err) {
+      console.error("Error al generar PDF general:", err);
+      setToast({
+        mostrar: true,
+        mensaje: "Error al generar catálogo de productos",
+        tipo: "error",
+      });
+    }
+  };
+
   return (
     <Container className="mt-3">
       <Row className="align-items-center mb-3">
-        <Col className="d-flex align-items-center">
+        <Col xs={12} sm={4} md={4} lg={4} className="d-flex align-items-center">
           <h3 className="mb-0">
             <i className="bi-bag-heart-fill me-2"></i> Productos
           </h3>
         </Col>
 
-        <Col xs={3} sm={5} md={5} lg={5} className="text-end">
+        <Col xs={12} sm={8} md={8} lg={8} className="text-end mt-2 mt-sm-0">
+          <Button
+            onClick={() => generarPDFGeneralProductos()}
+            size="md"
+            variant="success"
+            className="me-2"
+            disabled={productos.length === 0}
+          >
+            <i className="bi-file-earmark-pdf me-2"></i>
+            <span className="d-none d-sm-inline">Descargar PDF</span>
+          </Button>
           <Button onClick={() => setMostrarModal(true)} size="md">
             <i className="bi-plus-lg"></i>
             <span className="d-none d-sm-inline ms-2">Nuevo Producto</span>
@@ -378,6 +555,7 @@ const Productos = () => {
             cargando={cargando}
             abrirModalEdicion={abrirModalEdicion}
             abrirModalEliminacion={abrirModalEliminacion}
+            generarPDFProducto={generarPDFProducto}
           />
         </Col>
       </Row>

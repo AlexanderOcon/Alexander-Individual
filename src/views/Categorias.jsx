@@ -11,6 +11,8 @@ import TarjetaCategoria from "../components/categorias/TarjetaCategoria";
 import NotificacionOperacion from "../components/NotificacionOperacion";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
 import Paginacion from "../components/ordenamiento/Paginacion";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const Categorias = () => {
   const [toast, setToast] = useState({ mostrar: false, mensaje: "", tipo: "" });
@@ -46,6 +48,126 @@ const Categorias = () => {
     nombre_categoria: "",
     descripcion_categoria: "",
   });
+
+  const generarPDFCategoria = (categoria) => {
+    const doc = new jsPDF();
+
+    // Título
+    doc.setFontSize(18);
+    doc.text("Reporte de Categoría", 14, 20);
+
+    // Línea decorativa
+    doc.line(14, 25, 195, 25);
+
+    // Información de la categoría
+    doc.setFontSize(12);
+
+    autoTable(doc, {
+      startY: 35,
+      head: [["Campo", "Valor"]],
+      body: [
+        ["ID", categoria.id_categoria],
+        ["Nombre", categoria.nombre_categoria],
+        ["Descripción", categoria.descripcion_categoria],
+      ],
+    });
+
+    // Descargar PDF
+    doc.save(`categoria_${categoria.id_categoria}.pdf`);
+  };
+
+  const generarPDFGeneralCategorias = () => {
+    try {
+      const doc = new jsPDF("p", "mm", "a4");
+      const ahora = new Date();
+      const fecha = ahora.toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+
+      // Título principal
+      doc.setFontSize(20);
+      doc.setFont(undefined, "bold");
+      doc.text("Reporte de Categorías", 14, 20);
+
+      // Fecha de generación
+      doc.setFontSize(10);
+      doc.setFont(undefined, "normal");
+      doc.text(`Generado: ${fecha}`, 14, 28);
+      doc.text(`Total de categorías: ${categorias.length}`, 14, 34);
+
+      // Línea decorativa
+      doc.setDrawColor(0, 102, 204);
+      doc.setLineWidth(0.5);
+      doc.line(14, 38, 195, 38);
+
+      // Tabla con todas las categorías
+      const datosTabla = categorias.map((cat) => [
+        cat.id_categoria,
+        cat.nombre_categoria,
+        cat.descripcion_categoria || "N/A",
+      ]);
+
+      autoTable(doc, {
+        startY: 42,
+        head: [["ID", "Nombre", "Descripción"]],
+        body: datosTabla,
+        theme: "grid",
+        headerStyles: {
+          fillColor: [0, 102, 204],
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+          halign: "center",
+          padding: 3,
+        },
+        bodyStyles: {
+          textColor: [0, 0, 0],
+          padding: 3,
+        },
+        alternateRowStyles: {
+          fillColor: [240, 248, 255],
+        },
+        columnStyles: {
+          0: { cellWidth: 15, halign: "center" },
+          1: { cellWidth: 60 },
+          2: { cellWidth: "auto" },
+        },
+        margin: { top: 42, left: 14, right: 14 },
+        didDrawPage: (data) => {
+          // Pie de página
+          const pageSize = doc.internal.pageSize;
+          const pageHeight = pageSize.height;
+          const pageWidth = pageSize.width;
+
+          doc.setFontSize(10);
+          doc.text(
+            `Página ${data.pageNumber}`,
+            pageWidth / 2,
+            pageHeight - 10,
+            { align: "center" },
+          );
+        },
+      });
+
+      // Descargar PDF
+      doc.save(`Reporte_Categorias_${ahora.getTime()}.pdf`);
+
+      // Mostrar notificación de éxito
+      setToast({
+        mostrar: true,
+        mensaje: `PDF general de categorías descargado exitosamente.`,
+        tipo: "exito",
+      });
+    } catch (err) {
+      console.error("Error al generar PDF general:", err);
+      setToast({
+        mostrar: true,
+        mensaje: "Error al generar PDF general de categorías.",
+        tipo: "error",
+      });
+    }
+  };
 
   const cargarCategorias = async () => {
     try {
@@ -283,14 +405,24 @@ const Categorias = () => {
 
   return (
     <Container className="mt-3">
-      {/* Título y botón Nueva Categoría */}
+      {/* Título y botones */}
       <Row className="align-items-center mb-3">
-        <Col xs={9} sm={7} md={7} lg={7} className="d-flex align-items-center">
+        <Col xs={12} sm={4} md={4} lg={4} className="d-flex align-items-center">
           <h3 className="mb-0">
             <i className="bi-bookmark-plus-fill me-2"></i> Categorías
           </h3>
         </Col>
-        <Col xs={3} sm={5} md={5} lg={5} className="text-end">
+        <Col xs={12} sm={8} md={8} lg={8} className="text-end mt-2 mt-sm-0">
+          <Button
+            onClick={() => generarPDFGeneralCategorias()}
+            size="md"
+            variant="success"
+            className="me-2"
+            disabled={categorias.length === 0}
+          >
+            <i className="bi-file-earmark-pdf me-2"></i>
+            <span className="d-none d-sm-inline">Descargar PDF</span>
+          </Button>
           <Button onClick={() => setMostrarModal(true)} size="md">
             <i className="bi-plus-lg"></i>
             <span className="d-none d-sm-inline ms-2">Nueva Categoría</span>
@@ -340,6 +472,7 @@ const Categorias = () => {
               categorias={categoriasFiltradas}
               abrirModalEdicion={abrirModalEdicion}
               abrirModalEliminacion={abrirModalEliminacion}
+              generarPDFCategoria={generarPDFCategoria}
             />
           </Col>
         </Row>
@@ -370,6 +503,7 @@ const Categorias = () => {
               categorias={categorias}
               abrirModalEdicion={abrirModalEdicion}
               abrirModalEliminacion={abrirModalEliminacion}
+              generarPDFCategoria={generarPDFCategoria}
             />
           </Col>
         </Row>

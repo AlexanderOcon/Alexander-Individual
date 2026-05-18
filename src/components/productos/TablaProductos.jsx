@@ -6,6 +6,7 @@ const TablaProductos = ({
   categorias,
   abrirModalEdicion,
   abrirModalEliminacion,
+  generarPDFProducto,
   cargando,
 }) => {
   const obtenerNombreCategoria = (id) => {
@@ -64,11 +65,20 @@ const TablaProductos = ({
                   <Button
                     variant="outline-danger"
                     size="sm"
+                    className="m-1"
                     onClick={() =>
                       abrirModalEliminacion && abrirModalEliminacion(p)
                     }
                   >
                     <i className="bi bi-trash"></i>
+                  </Button>
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    className="m-1"
+                    onClick={() => generarPDFProducto && generarPDFProducto(p)}
+                  >
+                    <i className="bi bi-file-earmark-pdf"></i>
                   </Button>
                 </td>
               </tr>
