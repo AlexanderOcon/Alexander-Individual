@@ -5,8 +5,7 @@ import { supabase } from "../../database/supabaseconfig";
 import logo from "../../assets/logo.png";
 
 const Encabezado = () => {
-
-const [mostrarMenu, setMostrarMenu] = useState(false);
+  const [mostrarMenu, setMostrarMenu] = useState(false);
   const navigate = useNavigate();
   const location = useLocation(); // Para detectar la ruta actual
 
@@ -88,8 +87,28 @@ const [mostrarMenu, setMostrarMenu] = useState(false);
               onClick={() => manejarNavegacion("/empleados")}
               className={mostrarMenu ? "color-texto-marca" : "text-white"}
             >
-              {mostrarMenu ? <i className="bi-person-badge-fill me-2"></i> : null}
+              {mostrarMenu ? (
+                <i className="bi-person-badge-fill me-2"></i>
+              ) : null}
               <strong>Empleados</strong>
+            </Nav.Link>
+
+            <Nav.Link
+              onClick={() => manejarNavegacion("/clientes")}
+              className={mostrarMenu ? "color-texto-marca" : "text-white"}
+            >
+              {mostrarMenu ? (
+                <i className="bi-person-lines-fill me-2"></i>
+              ) : null}
+              <strong>Clientes</strong>
+            </Nav.Link>
+
+            <Nav.Link
+              onClick={() => manejarNavegacion("/ventas")}
+              className={mostrarMenu ? "color-texto-marca" : "text-white"}
+            >
+              {mostrarMenu ? <i className="bi-cart-fill me-2"></i> : null}
+              <strong>Ventas</strong>
             </Nav.Link>
 
             <Nav.Link
@@ -112,15 +131,11 @@ const [mostrarMenu, setMostrarMenu] = useState(false);
             <hr />
 
             {/* Ícono cerrar sesión en barra superior */}
-            
-              <Nav.Link
-                onClick={cerrarSesion}
-                className="text-white"
 
-              >
-                <i className="bi-box-arrow-right me-2"></i>
-                <strong> Cerrar sesión</strong>
-              </Nav.Link>
+            <Nav.Link onClick={cerrarSesion} className="text-white">
+              <i className="bi-box-arrow-right me-2"></i>
+              <strong> Cerrar sesión</strong>
+            </Nav.Link>
 
             <hr />
           </Nav>
