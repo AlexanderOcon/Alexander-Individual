@@ -1,25 +1,28 @@
-import React, { useEffect, useState } from "react";
-import {Container,Row,Col,Card,Spinner,Form,Button,} from "react-bootstrap";
-import {LineChart,Line,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,PieChart,Pie,Cell,} from "recharts";
+import React, { useEffect, useState, useRef } from "react";
+import { Container, Row, Col, Card, Spinner, Form, Button } from "react-bootstrap";
+import { Chart as ChartJS, registerables } from "chart.js";
 import { supabase } from "../database/supabaseconfig";
 import * as XLSX from "xlsx";
+
+ChartJS.register(...registerables);
+
+const COLORES = [
+  "#5e26b2",
+  "#39ff95",
+  "#ff6bc6",
+  "#8b46ff",
+  "#00d4ff",
+  "#ffd93d",
+];
 
 const Inicio = () => {
   const [cargando, setCargando] = useState(true);
   const [fechaDesde, setFechaDesde] = useState(
-    new Date().toLocaleDateString("en-CA", { timeZone: "America/Managua" }),
+    new Date().toLocaleDateString("en-CA", { timeZone: "America/Managua" })
   );
   const [fechaHasta, setFechaHasta] = useState(
-    new Date().toLocaleDateString("en-CA", { timeZone: "America/Managua" }),
+    new Date().toLocaleDateString("en-CA", { timeZone: "America/Managua" })
   );
-  const COLORES = [
-    "#5e26b2",
-    "#39ff95",
-    "#ff6bc6",
-    "#8b46ff",
-    "#00d4ff",
-    "#ffd93d",
-  ];
   const [estadisticas, setEstadisticas] = useState({
     totalVentas: 0,
     ventasEfectivo: 0,
@@ -31,9 +34,121 @@ const Inicio = () => {
     ventasPorCategoria: [],
   });
 
+  const lineChartRef = useRef(null);
+  const pieChartRef = useRef(null);
+  const lineChartInstance = useRef(null);
+  const pieChartInstance = useRef(null);
+
   useEffect(() => {
     cargarDatos(fechaDesde, fechaHasta);
   }, [fechaDesde, fechaHasta]);
+
+  // Crear/actualizar gráficos cuando cambian los datos
+  useEffect(() => {
+    if (cargando) return;
+
+    // --- Gráfico de línea: Ventas por Hora ---
+    if (lineChartRef.current) {
+      if (lineChartInstance.current) {
+        lineChartInstance.current.destroy();
+      }
+
+      const labels = estadisticas.ventasPorHora.map((v) => v.hora);
+      const data = estadisticas.ventasPorHora.map((v) => v.total);
+
+      lineChartInstance.current = new ChartJS(lineChartRef.current, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Ventas (C$)",
+              data,
+              borderColor: "#5e26b2",
+              backgroundColor: "rgba(94,38,178,0.1)",
+              borderWidth: 3,
+              pointRadius: 5,
+              pointBackgroundColor: "#5e26b2",
+              tension: 0.4,
+              fill: true,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `C$ ${ctx.parsed.y}`,
+              },
+            },
+          },
+          scales: {
+            y: {
+              ticks: {
+                callback: (v) => `C$${v}`,
+              },
+            },
+          },
+        },
+      });
+    }
+
+    // --- Gráfico de pie: Ventas por Categoría ---
+    if (pieChartRef.current) {
+      if (pieChartInstance.current) {
+        pieChartInstance.current.destroy();
+      }
+
+      const categorias =
+        estadisticas.ventasPorCategoria.length > 0
+          ? estadisticas.ventasPorCategoria
+          : [{ name: "Sin datos", value: 1 }];
+
+      const labels = categorias.map((c) => c.name);
+      const data = categorias.map((c) => c.value);
+      const backgroundColors = categorias.map(
+        (_, i) => COLORES[i % COLORES.length]
+      );
+
+      pieChartInstance.current = new ChartJS(pieChartRef.current, {
+        type: "doughnut",
+        data: {
+          labels,
+          datasets: [
+            {
+              data,
+              backgroundColor: backgroundColors,
+              borderWidth: 2,
+              borderColor: "#fff",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: { boxWidth: 14, padding: 10 },
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) =>
+                  ` ${ctx.label}: C$ ${ctx.parsed.toFixed(2)}`,
+              },
+            },
+          },
+        },
+      });
+    }
+
+    // Limpiar al desmontar
+    return () => {
+      lineChartInstance.current?.destroy();
+      pieChartInstance.current?.destroy();
+    };
+  }, [estadisticas, cargando]);
 
   const cargarDatos = async (desde, hasta) => {
     try {
@@ -59,14 +174,7 @@ const Inicio = () => {
         const { data: detalles } = await supabase
           .from("detalles_ventas")
           .select(
-            `
-          cantidad, 
-          subtotal,
-          productos (
-            nombre_producto,
-            categorias (nombre_categoria)
-          )
-        `,
+            `cantidad, subtotal, productos (nombre_producto, categorias (nombre_categoria))`
           )
           .in("id_venta", idsVentas);
 
@@ -76,17 +184,12 @@ const Inicio = () => {
 
           const categoria =
             d.productos?.categorias?.nombre_categoria || "Sin categoría";
-          const existente = ventasPorCategoria.find(
-            (c) => c.name === categoria,
-          );
+          const existente = ventasPorCategoria.find((c) => c.name === categoria);
 
           if (existente) {
             existente.value += d.subtotal || 0;
           } else {
-            ventasPorCategoria.push({
-              name: categoria,
-              value: d.subtotal || 0,
-            });
+            ventasPorCategoria.push({ name: categoria, value: d.subtotal || 0 });
           }
         });
 
@@ -138,34 +241,15 @@ const Inicio = () => {
     }
   };
 
-  if (cargando) {
-    return (
-      <Container className="text-center mt-5">
-        <Spinner animation="border" variant="primary" size="lg" />
-        <p className="mt-3">Cargando estadísticas...</p>
-      </Container>
-    );
-  }
-
   const descargarExcel = async () => {
     try {
       setCargando(true);
       const inicioRango = `${fechaDesde} 00:00:00`;
       const finRango = `${fechaHasta} 23:59:59`;
 
-      // 1. Obtener Ventas
       const { data: ventas, error: errorVentas } = await supabase
         .from("ventas")
-        .select(
-          `
-        id_venta,
-        fecha_venta,
-        total,
-        metodo_pago,
-        id_empleado,
-        id_cliente
-      `,
-        )
+        .select(`id_venta, fecha_venta, total, metodo_pago, id_empleado, id_cliente`)
         .gte("fecha_venta", inicioRango)
         .lte("fecha_venta", finRango)
         .order("fecha_venta", { ascending: false });
@@ -178,18 +262,8 @@ const Inicio = () => {
         const { data: detalles, error: errorDetalles } = await supabase
           .from("detalles_ventas")
           .select(
-            `
-          id_detalle,
-          id_venta,
-          cantidad,
-          precio_unitario,
-          subtotal,
-          id_producto,
-          productos (
-            nombre_producto,
-            categorias (nombre_categoria)
-          )
-        `,
+            `id_detalle, id_venta, cantidad, precio_unitario, subtotal, id_producto,
+             productos (nombre_producto, categorias (nombre_categoria))`
           )
           .in("id_venta", idsVentas)
           .order("id_venta");
@@ -200,31 +274,23 @@ const Inicio = () => {
 
       const wb = XLSX.utils.book_new();
 
-      // Hoja Ventas
-      if (ventas && ventas.length > 0) {
-        const wsVentas = XLSX.utils.json_to_sheet(ventas);
-        XLSX.utils.book_append_sheet(wb, wsVentas, "Ventas");
-      } else {
-        XLSX.utils.book_append_sheet(
-          wb,
-          XLSX.utils.json_to_sheet([
-            { Mensaje: "No hay ventas en este rango" },
-          ]),
-          "Ventas",
-        );
-      }
+      XLSX.utils.book_append_sheet(
+        wb,
+        XLSX.utils.json_to_sheet(
+          ventas?.length > 0 ? ventas : [{ Mensaje: "No hay ventas en este rango" }]
+        ),
+        "Ventas"
+      );
 
-      // Hoja Detalles
-      if (detallesVenta && detallesVenta.length > 0) {
-        const wsDetalles = XLSX.utils.json_to_sheet(detallesVenta);
-        XLSX.utils.book_append_sheet(wb, wsDetalles, "Detalles_Ventas");
-      } else {
-        XLSX.utils.book_append_sheet(
-          wb,
-          XLSX.utils.json_to_sheet([{ Mensaje: "No hay detalles de ventas" }]),
-          "Detalles_Ventas",
-        );
-      }
+      XLSX.utils.book_append_sheet(
+        wb,
+        XLSX.utils.json_to_sheet(
+          detallesVenta.length > 0
+            ? detallesVenta
+            : [{ Mensaje: "No hay detalles de ventas" }]
+        ),
+        "Detalles_Ventas"
+      );
 
       XLSX.writeFile(wb, `Reporte_Ventas_${fechaDesde}_a_${fechaHasta}.xlsx`);
     } catch (err) {
@@ -234,6 +300,15 @@ const Inicio = () => {
       setCargando(false);
     }
   };
+
+  if (cargando) {
+    return (
+      <Container className="text-center mt-5">
+        <Spinner animation="border" variant="primary" size="lg" />
+        <p className="mt-3">Cargando estadísticas...</p>
+      </Container>
+    );
+  }
 
   return (
     <div className="mt-2">
@@ -246,7 +321,6 @@ const Inicio = () => {
         <Col xs={6} md={3}>
           <Form.Group>
             <Form.Label>Desde</Form.Label>
-
             <Form.Control
               type="date"
               value={fechaDesde}
@@ -258,7 +332,6 @@ const Inicio = () => {
         <Col xs={6} md={3}>
           <Form.Group>
             <Form.Label>Hasta</Form.Label>
-
             <Form.Control
               type="date"
               value={fechaHasta}
@@ -280,13 +353,10 @@ const Inicio = () => {
         <Col md={6} lg={3}>
           <Card
             className="h-100 text-white shadow"
-            style={{
-              background: "linear-gradient(135deg, #28a745, #34ce57)",
-            }}
+            style={{ background: "linear-gradient(135deg, #28a745, #34ce57)" }}
           >
             <Card.Body>
               <h5>Ventas Totales</h5>
-
               <h2>C$ {estadisticas.totalVentas.toFixed(2)}</h2>
             </Card.Body>
           </Card>
@@ -295,13 +365,10 @@ const Inicio = () => {
         <Col md={6} lg={3}>
           <Card
             className="h-100 text-white shadow"
-            style={{
-              background: "linear-gradient(135deg, #0166d3, #3399ff)",
-            }}
+            style={{ background: "linear-gradient(135deg, #0166d3, #3399ff)" }}
           >
             <Card.Body>
               <h5>Efectivo</h5>
-
               <h2>C$ {estadisticas.ventasEfectivo.toFixed(2)}</h2>
             </Card.Body>
           </Card>
@@ -310,13 +377,10 @@ const Inicio = () => {
         <Col md={6} lg={3}>
           <Card
             className="h-100 text-white shadow"
-            style={{
-              background: "linear-gradient(135deg, #5ea5f1, #94c0ec)",
-            }}
+            style={{ background: "linear-gradient(135deg, #5ea5f1, #94c0ec)" }}
           >
             <Card.Body>
               <h5>Tarjeta</h5>
-
               <h2>C$ {estadisticas.ventasTarjeta.toFixed(2)}</h2>
             </Card.Body>
           </Card>
@@ -325,13 +389,10 @@ const Inicio = () => {
         <Col md={6} lg={3}>
           <Card
             className="h-100 text-white shadow"
-            style={{
-              background: "linear-gradient(135deg, #e27d01, #ffa500)",
-            }}
+            style={{ background: "linear-gradient(135deg, #e27d01, #ffa500)" }}
           >
             <Card.Body>
               <h5>Productos Vendidos</h5>
-
               <h2>{estadisticas.productosVendidos}</h2>
             </Card.Body>
           </Card>
@@ -344,26 +405,7 @@ const Inicio = () => {
           <Card className="shadow border-0">
             <Card.Body>
               <h5 className="mb-3">Ventas por Hora</h5>
-
-              <ResponsiveContainer width="100%" height={360}>
-                <LineChart data={estadisticas.ventasPorHora}>
-                  <CartesianGrid strokeDasharray="3 3" />
-
-                  <XAxis dataKey="hora" />
-
-                  <YAxis tickFormatter={(v) => `C$${v}`} />
-
-                  <Tooltip formatter={(v) => [`C$ ${v}`, "Monto"]} />
-
-                  <Line
-                    type="monotone"
-                    dataKey="total"
-                    stroke="#5e26b2"
-                    strokeWidth={4}
-                    dot={{ r: 6 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <canvas ref={lineChartRef} height={150} />
             </Card.Body>
           </Card>
         </Col>
@@ -372,34 +414,7 @@ const Inicio = () => {
           <Card className="shadow border-0">
             <Card.Body>
               <h5 className="mb-3">Ventas por Categoría</h5>
-
-              <ResponsiveContainer width="100%" height={360}>
-                <PieChart>
-                  <Pie
-                    data={
-                      estadisticas.ventasPorCategoria.length > 0
-                        ? estadisticas.ventasPorCategoria
-                        : [{ name: "Sin datos", value: 1 }]
-                    }
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={110}
-                    label
-                  >
-                    {estadisticas.ventasPorCategoria.map((_, i) => (
-                      <Cell
-                        key={`cell-${i}`}
-                        fill={COLORES[i % COLORES.length]}
-                      />
-                    ))}
-                  </Pie>
-
-                  <Tooltip formatter={(v) => `C$ ${v}`} />
-                </PieChart>
-              </ResponsiveContainer>
+              <canvas ref={pieChartRef} />
             </Card.Body>
           </Card>
         </Col>
