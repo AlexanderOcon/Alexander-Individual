@@ -76,6 +76,7 @@ const Inicio = () => {
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: { display: false },
             tooltip: {
@@ -127,6 +128,7 @@ const Inicio = () => {
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
               position: "bottom",
@@ -350,7 +352,7 @@ const Inicio = () => {
 
       {/* Tarjetas */}
       <Row className="g-4 mb-5">
-        <Col md={6} lg={3}>
+        <Col xs={12} md={6} lg={3}>
           <Card
             className="h-100 text-white shadow"
             style={{ background: "linear-gradient(135deg, #28a745, #34ce57)" }}
@@ -362,7 +364,7 @@ const Inicio = () => {
           </Card>
         </Col>
 
-        <Col md={6} lg={3}>
+        <Col xs={12} md={6} lg={3}>
           <Card
             className="h-100 text-white shadow"
             style={{ background: "linear-gradient(135deg, #0166d3, #3399ff)" }}
@@ -374,7 +376,7 @@ const Inicio = () => {
           </Card>
         </Col>
 
-        <Col md={6} lg={3}>
+        <Col xs={12} md={6} lg={3}>
           <Card
             className="h-100 text-white shadow"
             style={{ background: "linear-gradient(135deg, #5ea5f1, #94c0ec)" }}
@@ -386,7 +388,7 @@ const Inicio = () => {
           </Card>
         </Col>
 
-        <Col md={6} lg={3}>
+        <Col xs={12} md={6} lg={3}>
           <Card
             className="h-100 text-white shadow"
             style={{ background: "linear-gradient(135deg, #e27d01, #ffa500)" }}
@@ -401,20 +403,24 @@ const Inicio = () => {
 
       {/* Gráficos */}
       <Row className="g-4">
-        <Col lg={8}>
+        <Col xs={12} lg={8}>
           <Card className="shadow border-0">
             <Card.Body>
               <h5 className="mb-3">Ventas por Hora</h5>
-              <canvas ref={lineChartRef} height={150} />
+              <div style={{ position: "relative", height: "300px" }}>
+                <canvas ref={lineChartRef} />
+              </div>
             </Card.Body>
           </Card>
         </Col>
 
-        <Col lg={4}>
+        <Col xs={12} lg={4}>
           <Card className="shadow border-0">
             <Card.Body>
               <h5 className="mb-3">Ventas por Categoría</h5>
-              <canvas ref={pieChartRef} />
+              <div style={{ position: "relative", height: "300px" }}>
+                <canvas ref={pieChartRef} />
+              </div>
             </Card.Body>
           </Card>
         </Col>
