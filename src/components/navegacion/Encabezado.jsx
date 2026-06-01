@@ -3,9 +3,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Container, Nav, Navbar, Offcanvas } from "react-bootstrap";
 import { supabase } from "../../database/supabaseconfig";
 import logo from "../../assets/logo.png";
+import ChatIA from "../ChatBot/ChatIA";
 
 const Encabezado = () => {
   const [mostrarMenu, setMostrarMenu] = useState(false);
+  const [mostrarChatIA, setMostrarChatIA] = useState(false);
   const navigate = useNavigate();
   const location = useLocation(); // Para detectar la ruta actual
 
@@ -119,6 +121,13 @@ const Encabezado = () => {
               <strong>Productos</strong>
             </Nav.Link>
 
+            <Nav.Link 
+              onClick={() => setMostrarChatIA(true)} 
+              className="text-white"
+            >
+              <i className="bi bi-robot me-2"></i>
+            </Nav.Link>
+
             {/* Opción para ir al catálogo público desde admin */}
             <Nav.Link
               onClick={() => manejarNavegacion("/catalogo")}
@@ -163,6 +172,7 @@ const Encabezado = () => {
   }
 
   return (
+    <>
     <Navbar
       expand="md"
       fixed="top"
@@ -210,6 +220,12 @@ const Encabezado = () => {
         </Navbar.Offcanvas>
       </Container>
     </Navbar>
+
+    <ChatIA
+      mostrar={mostrarChatIA}
+      onCerrar={() => setMostrarChatIA(false)}
+    />
+    </>
   );
 };
 
