@@ -61,7 +61,7 @@ const Ventas = () => {
           *,
           clientes (nombre_cliente, apellido_cliente),
           empleados (nombre_empleado, apellido_empleado),
-          detalles_ventas (*, Productos (nombre_producto))
+          detalles_ventas (*, productos (nombre_producto))
         `,
         )
         .order("fecha_venta", { ascending: false });

@@ -32,7 +32,7 @@ const ChatIA = ({ mostrar, onCerrar }) => {
     setCargando(true);
 
     try {
-      const modelo = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
+      const modelo = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
       const prompt = `
       Eres un experto en PostgreSQL. Genera una consulta SQL válida.
@@ -85,7 +85,11 @@ const ChatIA = ({ mostrar, onCerrar }) => {
       }
 
       console.log("Datos recibidos de Supabase:", data);
-      const datosExtraidos = data ? (Array.isArray(data) ? data : data.map(item => item.datos)) : [];
+      // La función RPC devuelve [{ datos: {...} }, { datos: {...} }, ...]
+      // Extrae los datos reales de cada objeto
+      const datosExtraidos = data && Array.isArray(data) 
+        ? data.map(item => item.datos) 
+        : [];
 
       const mensajeRespuesta = {
         tipo: 'ia',

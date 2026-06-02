@@ -176,7 +176,7 @@ const Inicio = () => {
         const { data: detalles } = await supabase
           .from("detalles_ventas")
           .select(
-            `cantidad, subtotal, productos (nombre_producto, categorias (nombre_categoria))`
+            `cantidad, subtotal, productos (nombre_producto)`
           )
           .in("id_venta", idsVentas);
 
@@ -184,8 +184,7 @@ const Inicio = () => {
           productosVendidos += d.cantidad || 0;
           montoProductos += d.subtotal || 0;
 
-          const categoria =
-            d.productos?.categorias?.nombre_categoria || "Sin categoría";
+          const categoria = "General";
           const existente = ventasPorCategoria.find((c) => c.name === categoria);
 
           if (existente) {
@@ -265,7 +264,7 @@ const Inicio = () => {
           .from("detalles_ventas")
           .select(
             `id_detalle, id_venta, cantidad, precio_unitario, subtotal, id_producto,
-             productos (nombre_producto, categorias (nombre_categoria))`
+            productos (nombre_producto)`
           )
           .in("id_venta", idsVentas)
           .order("id_venta");

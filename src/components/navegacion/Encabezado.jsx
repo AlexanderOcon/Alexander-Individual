@@ -4,6 +4,7 @@ import { Container, Nav, Navbar, Offcanvas } from "react-bootstrap";
 import { supabase } from "../../database/supabaseconfig";
 import logo from "../../assets/logo.png";
 import ChatIA from "../ChatBot/ChatIA";
+import Dashboard from "../../views/Dashboard";
 
 const Encabezado = () => {
   const [mostrarMenu, setMostrarMenu] = useState(false);
@@ -126,6 +127,14 @@ const Encabezado = () => {
               className="text-white"
             >
               <i className="bi bi-robot me-2"></i>
+            </Nav.Link>
+
+            <Nav.Link
+              onClick={() => manejarNavegacion("/dashboard")}
+              className={mostrarMenu ? "color-texto-marca" : "text-white"}
+            >
+              {mostrarMenu ? <i className="bi-graph-up me-2"></i> : null}
+              <strong>Dashboard</strong>
             </Nav.Link>
 
             {/* Opción para ir al catálogo público desde admin */}
