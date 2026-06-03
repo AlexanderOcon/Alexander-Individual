@@ -2,11 +2,13 @@
 import { useNavigate } from "react-router-dom";
 import FormularioLogin from "../components/login/FormularioLogin";
 import { supabase } from "../database/supabaseconfig";
+import logo from "../assets/logo.png";
 
 const Login = () => {
   const [usuario, setUsuario] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
   const navegar = useNavigate();
 
   useEffect(() => {
@@ -16,14 +18,17 @@ const Login = () => {
     }
   }, [navegar]);
 
-  const IniciarSesion = async () => {
+  const IniciarSesion = async (e) => {
+    e?.preventDefault();
+    setCargando(true);
+    setError("");
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
         email: usuario,
         password: contrasena,
       });
 
-      if (error) {
+      if (authError) {
         setError("Usuario o contraseña incorrectos");
         return;
       }
@@ -31,32 +36,33 @@ const Login = () => {
         localStorage.setItem("usuario-supabase", usuario);
         navegar("/");
       }
-    } catch (error) {
+    } catch (err) {
       setError("Error al conectar con el servidor. Inténtalo de nuevo.");
-      console.error("Error en la solicitud de inicio de sesión:", error);
+      console.error("Error en la solicitud de inicio de sesión:", err);
+    } finally {
+      setCargando(false);
     }
   };
 
-  const estiloContenedor = {
-    position: "fixed",
-    inset: 0,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    overflow: "hidden",
-  };
-
   return (
-    <div style={estiloContenedor}>
-      <FormularioLogin
-        usuario={usuario}
-        contrasena={contrasena}
-        error={error}
-        setUsuario={setUsuario}
-        setContrasena={setContrasena}
-        IniciarSesion={IniciarSesion}
-      />
+    <div className="login-pantalla discosa-fondo">
+      <aside className="login-marca">
+        <img src={logo} alt="Discosa" className="login-marca-logo" />
+        <h1>Discosa</h1>
+        <p>Gestión de ventas, inventario y catálogo de productos de belleza.</p>
+      </aside>
+
+      <div className="login-formulario-panel">
+        <FormularioLogin
+          usuario={usuario}
+          contrasena={contrasena}
+          error={error}
+          cargando={cargando}
+          setUsuario={setUsuario}
+          setContrasena={setContrasena}
+          IniciarSesion={IniciarSesion}
+        />
+      </div>
     </div>
   );
 };

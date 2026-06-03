@@ -8,6 +8,7 @@ import TablaEmpleados from "../components/empleados/TablaEmpleado";
 import TarjetaEmpleado from "../components/empleados/TarjetaEmpleado";
 import NotificacionOperacion from "../components/NotificacionOperacion";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
+import LayoutPagina from "../components/layout/LayoutPagina";
 
 const Empleados = () => {
   const [empleados, setEmpleados] = useState([]);
@@ -218,28 +219,23 @@ const Empleados = () => {
   };
 
   return (
-    <Container className="mt-3">
-      <Row className="align-items-center mb-3">
-        <Col>
-          <h3>
-            <i className="bi-person-badge-fill me-2"></i>Empleados
-          </h3>
-        </Col>
-        <Col className="text-end">
-          <Button onClick={() => setMostrarModal(true)}>
-            <i className="bi-plus-lg me-1"></i>Nuevo Empleado
-          </Button>
-        </Col>
-      </Row>
-
-      <Row className="mb-4">
-        <Col md={6}>
-          <CuadroBusquedas
-            textoBusqueda={textoBusqueda}
-            manejarCambioBusqueda={(e) => setTextoBusqueda(e.target.value)}
-          />
-        </Col>
-      </Row>
+    <LayoutPagina
+      titulo="Empleados"
+      subtitulo="Personal y roles del negocio"
+      icono="bi-person-badge-fill"
+      acciones={
+        <Button onClick={() => setMostrarModal(true)}>
+          <i className="bi-plus-lg me-1" />
+          Nuevo empleado
+        </Button>
+      }
+      herramientas={
+        <CuadroBusquedas
+          textoBusqueda={textoBusqueda}
+          manejarCambioBusqueda={(e) => setTextoBusqueda(e.target.value)}
+        />
+      }
+    >
 
       {/* Spinner de carga inicial */}
       {cargando && (
@@ -304,7 +300,7 @@ const Empleados = () => {
         tipo={toast.tipo}
         onCerrar={() => setToast({ ...toast, mostrar: false })}
       />
-    </Container>
+    </LayoutPagina>
   );
 };
 

@@ -22,7 +22,7 @@ const TablaProductos = ({
           <Spinner animation="border" variant="success" role="status" />
         </div>
       ) : productos && productos.length > 0 ? (
-        <Table striped borderless hover responsive>
+        <Table striped borderless hover responsive className="table-discosa">
           <thead>
             <tr>
               <th>ID</th>

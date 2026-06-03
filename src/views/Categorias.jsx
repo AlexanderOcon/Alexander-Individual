@@ -12,6 +12,7 @@ import NotificacionOperacion from "../components/NotificacionOperacion";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
 import Paginacion from "../components/ordenamiento/Paginacion";
 import ModalEnvioCorreoCategorias from "../components/categorias/ModalEnvioCorreoCategorias";
+import LayoutPagina from "../components/layout/LayoutPagina";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import emailjs from '@emailjs/browser';
@@ -488,43 +489,30 @@ const Categorias = () => {
   };
 
   return (
-    <Container className="mt-3">
-      {/* Título y botones */}
-      <Row className="align-items-center mb-3">
-        <Col xs={8} sm={8} md={8} lg={8} className="d-flex align-items-center">
-          <h3 className="mb-0">
-            <i className="bi-bookmark-plus-fill me-2"></i> Categorías
-          </h3>
-        </Col>
-        <Col xs={2} sm={2} md={2} lg={2} className="text-end">
-          <Button variant="primary" onClick={abrirModalCorreo} size="md">
-            <i className="bi bi-envelope"></i>
-            <span className="d-none d-lg-inline ms-2">Enviar por Correo</span>
+    <LayoutPagina
+      titulo="Categorías"
+      subtitulo="Organiza los productos por categoría"
+      icono="bi-bookmark-plus-fill"
+      acciones={
+        <>
+          <Button variant="outline-primary" onClick={abrirModalCorreo} size="md">
+            <i className="bi bi-envelope" />
+            <span className="d-none d-lg-inline ms-2">Enviar por correo</span>
           </Button>
-        </Col>
-        <Col xs={2} sm={2} md={2} lg={2} className="text-end">
-          <Button
-            onClick={() => setMostrarModal(true)}
-            size="md"
-          >
-            <i className="bi-plus-lg"></i>
-            <span className="d-none d-lg-inline ms-2">Nueva Categoría</span>
+          <Button onClick={() => setMostrarModal(true)} size="md">
+            <i className="bi-plus-lg" />
+            <span className="d-none d-lg-inline ms-2">Nueva categoría</span>
           </Button>
-        </Col>
-      </Row>
-
-      <hr />
-
-      {/* Cuadro de busqueda */}
-      <Row className="mb-4">
-        <Col md={6} lg={5}>
-          <CuadroBusquedas
-            textoBusqueda={textoBusqueda}
-            manejarCambioBusqueda={manejarBusqueda}
-            placeholder="Buscar por nombre o descripción..."
-          />
-        </Col>
-      </Row>
+        </>
+      }
+      herramientas={
+        <CuadroBusquedas
+          textoBusqueda={textoBusqueda}
+          manejarCambioBusqueda={manejarBusqueda}
+          placeholder="Buscar por nombre o descripción..."
+        />
+      }
+    >
 
       {/* Mensaje cuando no se encuentran categorías */}
       {!cargando &&
@@ -647,7 +635,7 @@ const Categorias = () => {
         tipo={toast.tipo}
         onCerrar={() => setToast((prev) => ({ ...prev, mostrar: false }))}
       />
-    </Container>
+    </LayoutPagina>
   );
 };
 

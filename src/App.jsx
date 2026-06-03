@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
 import Encabezado from "./components/navegacion/Encabezado";
 
@@ -17,12 +16,19 @@ import Pagina404 from "./views/Pagina404";
 
 import "./App.css";
 
-const App = () => {
-  return (
-    <Router>
-      <Encabezado />
+const AppContenido = () => {
+  const location = useLocation();
+  const esLogin = location.pathname === "/login";
 
-      <main className="margen-superior-main">
+  return (
+    <>
+      {!esLogin && <Encabezado />}
+
+      <main
+        className={
+          esLogin ? "" : "margen-superior-main discosa-fondo"
+        }
+      >
         <Routes>
           <Route path="/login" element={<Login />} />
 
@@ -79,6 +85,14 @@ const App = () => {
           <Route path="*" element={<Pagina404 />} />
         </Routes>
       </main>
+    </>
+  );
+};
+
+const App = () => {
+  return (
+    <Router>
+      <AppContenido />
     </Router>
   );
 };

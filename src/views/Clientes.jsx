@@ -9,6 +9,7 @@ import TablaClientes from "../components/clientes/TablaClientes";
 import NotificacionOperacion from "../components/NotificacionOperacion";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
 import Paginacion from "../components/ordenamiento/Paginacion";
+import LayoutPagina from "../components/layout/LayoutPagina";
 
 const Clientes = () => {
   const [toast, setToast] = useState({ mostrar: false, mensaje: "", tipo: "" });
@@ -257,33 +258,24 @@ const Clientes = () => {
   };
 
   return (
-    <Container className="mt-3">
-      {/* Título y botón Nuevo Cliente */}
-      <Row className="align-items-center mb-3">
-        <Col xs={9} sm={7} md={7} lg={7} className="d-flex align-items-center">
-          <h3 className="mb-0">
-            <i className="bi-people-fill me-2"></i> Clientes
-          </h3>
-        </Col>
-        <Col xs={3} sm={5} md={5} lg={5} className="text-end">
-          <Button onClick={() => setMostrarModal(true)} size="md">
-            <i className="bi-plus-lg"></i>
-            <span className="d-none d-sm-inline ms-2">Nuevo Cliente</span>
-          </Button>
-        </Col>
-      </Row>
-      <hr />
-
-      {/* Búsqueda */}
-      <Row className="mb-4">
-        <Col md={6} lg={5}>
-          <CuadroBusquedas
-            textoBusqueda={textoBusqueda}
-            manejarCambioBusqueda={manejarBusqueda}
-            placeholder="Buscar por nombre, apellido o celular..."
-          />
-        </Col>
-      </Row>
+    <LayoutPagina
+      titulo="Clientes"
+      subtitulo="Registro y gestión de clientes"
+      icono="bi-people-fill"
+      acciones={
+        <Button onClick={() => setMostrarModal(true)} size="md">
+          <i className="bi-plus-lg" />
+          <span className="d-none d-sm-inline ms-2">Nuevo cliente</span>
+        </Button>
+      }
+      herramientas={
+        <CuadroBusquedas
+          textoBusqueda={textoBusqueda}
+          manejarCambioBusqueda={manejarBusqueda}
+          placeholder="Buscar por nombre, apellido o celular..."
+        />
+      }
+    >
 
       {/* Mensaje sin resultados */}
       {!cargando && textoBusqueda.trim() && clientesFiltrados.length === 0 && (
@@ -368,7 +360,7 @@ const Clientes = () => {
         tipo={toast.tipo}
         onCerrar={() => setToast({ ...toast, mostrar: false })}
       />
-    </Container>
+    </LayoutPagina>
   );
 };
 

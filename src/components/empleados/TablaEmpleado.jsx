@@ -21,7 +21,7 @@ const TablaEmpleados = ({ empleados, abrirModalEdicion }) => {
           <Spinner animation="border" variant="success" role="status" />
         </div>
       ) : (
-        <Table striped borderless hover responsive size="sm">
+        <Table striped borderless hover responsive size="sm" className="table-discosa">
           <thead>
             <tr>
               <th>ID</th>

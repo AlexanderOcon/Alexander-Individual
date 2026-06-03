@@ -26,7 +26,7 @@ const TablaCategorias = ({
           <Spinner animation="border" variant="success" role="status" />
         </div>
       ) : categorias && categorias.length > 0 ? (
-        <Table striped borderless hover responsive size="sm">
+        <Table striped borderless hover responsive size="sm" className="table-discosa">
           <thead>
             <tr>
               <th>ID</th>

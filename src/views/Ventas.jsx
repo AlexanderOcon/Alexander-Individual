@@ -4,6 +4,7 @@ import { supabase } from "../database/supabaseconfig";
 import NotificacionOperacion from "../components/NotificacionOperacion";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
 import Paginacion from "../components/ordenamiento/Paginacion";
+import LayoutPagina from "../components/layout/LayoutPagina";
 import TablaVentas from "../components/ventas/TablaVentas";
 import TarjetaVenta from "../components/ventas/TarjetaVenta";
 import FormularioVenta from "../components/ventas/FormularioVenta";
@@ -295,31 +296,24 @@ const Ventas = () => {
   const manejarBusqueda = (e) => setTextoBusqueda(e.target.value);
 
   return (
-    <Container className="mt-3">
-      <Row className="align-items-center mb-3">
-        <Col xs={8} lg={8}>
-          <h3 className="mb-0">
-            <i className="bi bi-receipt-cutoff me-2"></i> Ventas
-          </h3>
-        </Col>
-        <Col xs={4} lg={4} className="text-end">
-          <Button onClick={abrirNuevaVenta} size="md">
-            <i className="bi bi-plus-lg"></i>
-            <span className="d-none d-sm-inline ms-2">Nueva Venta</span>
-          </Button>
-        </Col>
-      </Row>
-      <hr />
-
-      <Row className="mb-4">
-        <Col md={6} lg={5}>
-          <CuadroBusquedas
-            textoBusqueda={textoBusqueda}
-            manejarCambioBusqueda={manejarBusqueda}
-            placeholder="Buscar por cliente o empleado..."
-          />
-        </Col>
-      </Row>
+    <LayoutPagina
+      titulo="Ventas"
+      subtitulo="Registro y seguimiento de ventas"
+      icono="bi-receipt-cutoff"
+      acciones={
+        <Button onClick={abrirNuevaVenta} size="md">
+          <i className="bi bi-plus-lg" />
+          <span className="d-none d-sm-inline ms-2">Nueva venta</span>
+        </Button>
+      }
+      herramientas={
+        <CuadroBusquedas
+          textoBusqueda={textoBusqueda}
+          manejarCambioBusqueda={manejarBusqueda}
+          placeholder="Buscar por cliente o empleado..."
+        />
+      }
+    >
 
       {cargando ? (
         <Row className="text-center my-5">
@@ -377,7 +371,7 @@ const Ventas = () => {
         tipo={toast.tipo}
         onCerrar={() => setToast({ ...toast, mostrar: false })}
       />
-    </Container>
+    </LayoutPagina>
   );
 };
 

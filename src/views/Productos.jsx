@@ -11,6 +11,7 @@ import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
 import TarjetaProducto from "../components/productos/TarjetasProductos";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import LayoutPagina from "../components/layout/LayoutPagina";
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);
@@ -495,43 +496,35 @@ const Productos = () => {
   };
 
   return (
-    <Container className="mt-3">
-      <Row className="align-items-center mb-3">
-        <Col xs={12} sm={4} md={4} lg={4} className="d-flex align-items-center">
-          <h3 className="mb-0">
-            <i className="bi-bag-heart-fill me-2"></i> Productos
-          </h3>
-        </Col>
-
-        <Col xs={12} sm={8} md={8} lg={8} className="text-end mt-2 mt-sm-0">
+    <LayoutPagina
+      titulo="Productos"
+      subtitulo="Inventario y precios"
+      icono="bi-bag-heart-fill"
+      acciones={
+        <>
           <Button
             onClick={() => generarPDFGeneralProductos()}
             size="md"
             variant="success"
-            className="me-2"
             disabled={productos.length === 0}
           >
-            <i className="bi-file-earmark-pdf me-2"></i>
+            <i className="bi-file-earmark-pdf me-2" />
             <span className="d-none d-sm-inline">Descargar PDF</span>
           </Button>
           <Button onClick={() => setMostrarModal(true)} size="md">
-            <i className="bi-plus-lg"></i>
-            <span className="d-none d-sm-inline ms-2">Nuevo Producto</span>
+            <i className="bi-plus-lg" />
+            <span className="d-none d-sm-inline ms-2">Nuevo producto</span>
           </Button>
-        </Col>
-      </Row>
-
-      <hr />
-
-      <Row className="mb-4">
-        <Col md={6} lg={5}>
-          <CuadroBusquedas
-            textoBusqueda={textoBusqueda}
-            manejarCambioBusqueda={manejarBusqueda}
-            placeholder="Buscar por nombre, descripción o precio..."
-          />
-        </Col>
-      </Row>
+        </>
+      }
+      herramientas={
+        <CuadroBusquedas
+          textoBusqueda={textoBusqueda}
+          manejarCambioBusqueda={manejarBusqueda}
+          placeholder="Buscar por nombre, descripción o precio..."
+        />
+      }
+    >
 
       <Row>
         <Col xs={12} sm={12} md={12} className="d-lg-none">
@@ -608,7 +601,7 @@ const Productos = () => {
         productoAEliminar={productoAEliminar}
         eliminarProducto={eliminarProducto}
       />
-    </Container>
+    </LayoutPagina>
   );
 };
 

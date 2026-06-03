@@ -15,8 +15,7 @@ const TarjetaCatalogo = ({ producto, categoriaNombre }) => {
   return (
     <>
       <Card
-        className="h-100 border-0 shadow-lg overflow-hidden position-relative cursor-pointer"
-        style={{ transition: "transform 0.03, box-shadow 0.3s" }}
+        className="h-100 tarjeta-interactiva overflow-hidden position-relative cursor-pointer"
         role="button"
         tabIndex={0}
         onClick={() => setMostrarModal(true)}

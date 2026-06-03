@@ -3,7 +3,7 @@ import { Table, Button } from "react-bootstrap";
 
 const TablaVentas = ({ ventas, abrirEdicion }) => {
   return (
-    <Table striped hover responsive size="sm">
+    <Table striped hover responsive size="sm" className="table-discosa">
       <thead>
         <tr>
           <th>ID</th>

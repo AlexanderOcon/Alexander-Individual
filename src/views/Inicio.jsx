@@ -1,18 +1,19 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Container, Row, Col, Card, Spinner, Form, Button } from "react-bootstrap";
+import { Row, Col, Card, Spinner, Form, Button } from "react-bootstrap";
 import { Chart as ChartJS, registerables } from "chart.js";
 import { supabase } from "../database/supabaseconfig";
 import * as XLSX from "xlsx";
+import LayoutPagina from "../components/layout/LayoutPagina";
 
 ChartJS.register(...registerables);
 
 const COLORES = [
-  "#5e26b2",
-  "#39ff95",
-  "#ff6bc6",
-  "#8b46ff",
-  "#00d4ff",
-  "#ffd93d",
+  "#1068db",
+  "#2697cc",
+  "#1e3d87",
+  "#5ea5f1",
+  "#198754",
+  "#e27d01",
 ];
 
 const Inicio = () => {
@@ -64,11 +65,11 @@ const Inicio = () => {
             {
               label: "Ventas (C$)",
               data,
-              borderColor: "#5e26b2",
-              backgroundColor: "rgba(94,38,178,0.1)",
+              borderColor: "#1068db",
+              backgroundColor: "rgba(16,104,219,0.1)",
               borderWidth: 3,
               pointRadius: 5,
-              pointBackgroundColor: "#5e26b2",
+              pointBackgroundColor: "#1068db",
               tension: 0.4,
               fill: true,
             },
@@ -304,119 +305,123 @@ const Inicio = () => {
 
   if (cargando) {
     return (
-      <Container className="text-center mt-5">
-        <Spinner animation="border" variant="primary" size="lg" />
-        <p className="mt-3">Cargando estadísticas...</p>
-      </Container>
+      <div className="pagina-discosa text-center">
+        <Spinner animation="border" className="spinner-discosa" size="lg" />
+        <p className="mt-3 text-muted">Cargando estadísticas...</p>
+      </div>
     );
   }
 
   return (
-    <div className="mt-2">
-      <div className="mb-4">
-        <h2>Dashboard</h2>
-        <h6>Estadísticas del Negocio</h6>
-      </div>
-
-      <Row className="mb-4">
-        <Col xs={6} md={3}>
-          <Form.Group>
-            <Form.Label>Desde</Form.Label>
-            <Form.Control
-              type="date"
-              value={fechaDesde}
-              onChange={(e) => setFechaDesde(e.target.value)}
-            />
-          </Form.Group>
-        </Col>
-
-        <Col xs={6} md={3}>
-          <Form.Group>
-            <Form.Label>Hasta</Form.Label>
-            <Form.Control
-              type="date"
-              value={fechaHasta}
-              onChange={(e) => setFechaHasta(e.target.value)}
-            />
-          </Form.Group>
-        </Col>
-
-        <Col md={3} className="d-flex align-items-end">
-          <Button variant="success" onClick={descargarExcel}>
-            <i className="bi bi-file-earmark-excel me-2"></i>
-            Descargar Excel
-          </Button>
-        </Col>
-      </Row>
-
-      {/* Tarjetas */}
-      <Row className="g-4 mb-5">
+    <LayoutPagina
+      titulo="Inicio"
+      subtitulo="Estadísticas del negocio"
+      icono="bi-speedometer2"
+      herramientas={
+        <Row className="g-3 align-items-end">
+          <Col xs={6} md={3}>
+            <Form.Group>
+              <Form.Label>Desde</Form.Label>
+              <Form.Control
+                type="date"
+                value={fechaDesde}
+                onChange={(e) => setFechaDesde(e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+          <Col xs={6} md={3}>
+            <Form.Group>
+              <Form.Label>Hasta</Form.Label>
+              <Form.Control
+                type="date"
+                value={fechaHasta}
+                onChange={(e) => setFechaHasta(e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={4} className="d-flex align-items-end">
+            <Button variant="success" onClick={descargarExcel}>
+              <i className="bi bi-file-earmark-excel me-2" />
+              Descargar Excel
+            </Button>
+          </Col>
+        </Row>
+      }
+    >
+      <Row className="g-4 mb-4">
         <Col xs={12} md={6} lg={3}>
           <Card
-            className="h-100 text-white shadow"
-            style={{ background: "linear-gradient(135deg, #28a745, #34ce57)" }}
+            className="h-100 text-white kpi-card"
+            style={{ background: "var(--discosa-gradient-vertical)" }}
           >
             <Card.Body>
-              <h5>Ventas Totales</h5>
+              <h5>
+                <i className="bi bi-cash-stack me-2" />
+                Ventas totales
+              </h5>
               <h2>C$ {estadisticas.totalVentas.toFixed(2)}</h2>
             </Card.Body>
           </Card>
         </Col>
-
         <Col xs={12} md={6} lg={3}>
           <Card
-            className="h-100 text-white shadow"
-            style={{ background: "linear-gradient(135deg, #0166d3, #3399ff)" }}
+            className="h-100 text-white kpi-card"
+            style={{ background: "linear-gradient(135deg, #198754, #34ce57)" }}
           >
             <Card.Body>
-              <h5>Efectivo</h5>
+              <h5>
+                <i className="bi bi-wallet2 me-2" />
+                Efectivo
+              </h5>
               <h2>C$ {estadisticas.ventasEfectivo.toFixed(2)}</h2>
             </Card.Body>
           </Card>
         </Col>
-
         <Col xs={12} md={6} lg={3}>
           <Card
-            className="h-100 text-white shadow"
-            style={{ background: "linear-gradient(135deg, #5ea5f1, #94c0ec)" }}
+            className="h-100 text-white kpi-card"
+            style={{ background: "linear-gradient(135deg, #1068db, #5ea5f1)" }}
           >
             <Card.Body>
-              <h5>Tarjeta</h5>
+              <h5>
+                <i className="bi bi-credit-card me-2" />
+                Tarjeta
+              </h5>
               <h2>C$ {estadisticas.ventasTarjeta.toFixed(2)}</h2>
             </Card.Body>
           </Card>
         </Col>
-
         <Col xs={12} md={6} lg={3}>
           <Card
-            className="h-100 text-white shadow"
+            className="h-100 text-white kpi-card"
             style={{ background: "linear-gradient(135deg, #e27d01, #ffa500)" }}
           >
             <Card.Body>
-              <h5>Productos Vendidos</h5>
+              <h5>
+                <i className="bi bi-bag-check me-2" />
+                Productos vendidos
+              </h5>
               <h2>{estadisticas.productosVendidos}</h2>
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-      {/* Gráficos */}
       <Row className="g-4">
         <Col xs={12} lg={8}>
-          <Card className="shadow border-0">
+          <Card className="chart-card">
             <Card.Body>
-              <h5 className="mb-3">Ventas por Hora</h5>
+              <h5 className="mb-3">Ventas por hora</h5>
               <div style={{ position: "relative", height: "300px" }}>
                 <canvas ref={lineChartRef} />
               </div>
             </Card.Body>
           </Card>
         </Col>
-
         <Col xs={12} lg={4}>
-          <Card className="shadow border-0">
+          <Card className="chart-card">
             <Card.Body>
-              <h5 className="mb-3">Ventas por Categoría</h5>
+              <h5 className="mb-3">Ventas por categoría</h5>
               <div style={{ position: "relative", height: "300px" }}>
                 <canvas ref={pieChartRef} />
               </div>
@@ -424,7 +429,7 @@ const Inicio = () => {
           </Card>
         </Col>
       </Row>
-    </div>
+    </LayoutPagina>
   );
 };
 

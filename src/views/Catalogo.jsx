@@ -11,6 +11,7 @@ import {
 import { supabase } from "../database/supabaseconfig";
 import TarjetaCatalogo from "../components/catalogo/TarjetaCatalogo";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
+import LayoutPagina from "../components/layout/LayoutPagina";
 
 const Catalogo = () => {
   const [productos, setProductos] = useState([]);
@@ -94,40 +95,39 @@ const Catalogo = () => {
   };
 
   return (
-    <div className="mt-3 px-1">
-      <Row className="text-center mb-1">
-        <Col>
-          <p className="lead text-muted">Nuestros productos de belleza</p>
-        </Col>
-      </Row>
-
-      <Row className="mb-1 align-items-end">
-        <Col md={4} lg={3} className="mb-2">
-          <Form.Group controlId="filtroCategoria">
-            <Form.Select
-              value={categoriaSeleccionada}
-              onChange={manejarCambioCategoria}
-              className="shadow-sm"
-            >
-              <option value="todas">Todas las categorías</option>
-              {categorias.map((cat) => (
-                <option key={cat.id_categoria} value={cat.id_categoria}>
-                  {cat.nombre_categoria}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-        </Col>
-
-        <Col md={6} lg={5} className="mb-2">
-          <Form.Group controlId="busquedaProducto">
-            <CuadroBusquedas
-              textoBusqueda={textoBusqueda}
-              manejarCambioBusqueda={manejarCambioBusqueda}
-            />
-          </Form.Group>
-        </Col>
-      </Row>
+    <LayoutPagina
+      titulo="Catálogo"
+      subtitulo="Nuestros productos de belleza"
+      icono="bi-images"
+      herramientas={
+        <Row className="g-3 align-items-end">
+          <Col md={4} lg={3}>
+            <Form.Group controlId="filtroCategoria">
+              <Form.Label className="small text-muted">Categoría</Form.Label>
+              <Form.Select
+                value={categoriaSeleccionada}
+                onChange={manejarCambioCategoria}
+              >
+                <option value="todas">Todas las categorías</option>
+                {categorias.map((cat) => (
+                  <option key={cat.id_categoria} value={cat.id_categoria}>
+                    {cat.nombre_categoria}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={8} lg={6}>
+            <Form.Group controlId="busquedaProducto">
+              <CuadroBusquedas
+                textoBusqueda={textoBusqueda}
+                manejarCambioBusqueda={manejarCambioBusqueda}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+      }
+    >
 
       {/* Estados */}
       {cargando && (
@@ -161,7 +161,7 @@ const Catalogo = () => {
           ))}
         </Row>
       )}
-    </div>
+    </LayoutPagina>
   );
 };
 
