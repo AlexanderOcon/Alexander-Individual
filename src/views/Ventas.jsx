@@ -56,21 +56,14 @@ const Ventas = () => {
       setCargando(true);
       const { data, error } = await supabase
         .from("ventas")
-        .select(
-          `
-          *,
-          clientes (nombre_cliente, apellido_cliente),
-          empleados (nombre_empleado, apellido_empleado),
-          detalles_ventas (*, productos (nombre_producto))
-        `,
-        )
+        .select("*, clientes(*), empleados(*), detalles_ventas(*, Productos(*))")
         .order("fecha_venta", { ascending: false });
 
       if (error) {
         console.error("Error al cargar ventas:", error);
         setToast({
           mostrar: true,
-          mensaje: "Error al cargar ventas",
+          mensaje: "Error al cargar ventas: " + error.message,
           tipo: "error",
         });
         return;
