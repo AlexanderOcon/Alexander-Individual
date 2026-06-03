@@ -1,0 +1,293 @@
+body {
+  background-color: #e8f1fc;
+  color: var(--discosa-text);
+}
+
+/* Fondo decorativo (app y login) */
+.discosa-fondo {
+  position: relative;
+  isolation: isolate;
+  background-color: #e8f1fc;
+  background-image: var(--discosa-fondo-orbes), var(--discosa-fondo-base);
+  background-attachment: fixed;
+}
+
+.discosa-fondo::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='2' cy='2' r='1.2' fill='%231068db' fill-opacity='0.12'/%3E%3C/svg%3E");
+  background-size: 32px 32px;
+}
+
+.discosa-fondo > * {
+  position: relative;
+  z-index: 1;
+}
+
+.margen-superior-main {
+  margin-top: 56px;
+  padding: 0;
+  min-height: calc(100vh - 56px);
+}
+
+.margen-superior-main.discosa-fondo::before {
+  top: 56px;
+}
+
+.pagina-discosa {
+  background: transparent;
+  min-height: calc(100vh - 56px);
+  padding: 1.5rem clamp(1rem, 3vw, 2rem);
+}
+
+.pagina-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.pagina-titulo-grupo {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.pagina-icono {
+  font-size: 1.75rem;
+  color: var(--discosa-primary);
+  margin-top: 0.15rem;
+}
+
+.pagina-titulo {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--discosa-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.pagina-subtitulo {
+  margin: 0.25rem 0 0;
+  color: var(--discosa-text-muted);
+  font-size: 0.95rem;
+}
+
+.pagina-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.pagina-herramientas {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  border-radius: var(--discosa-radius) !important;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(16, 104, 219, 0.08);
+}
+
+.pagina-contenido {
+  margin-top: 0.5rem;
+}
+
+/* Login */
+.login-pantalla {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  min-height: 100vh;
+  z-index: 1040;
+}
+
+.login-pantalla.discosa-fondo::before {
+  top: 0;
+}
+
+.login-marca {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  background: var(--discosa-gradient-vertical);
+  color: #fff;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.15);
+}
+
+.login-marca::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 30% 20%,
+    rgba(255, 255, 255, 0.15),
+    transparent 45%
+  );
+}
+
+.login-marca-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+}
+
+.login-marca h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.login-marca p {
+  font-size: 1.05rem;
+  opacity: 0.92;
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+.login-formulario-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: transparent;
+}
+
+.login-tarjeta {
+  width: 100%;
+  max-width: 400px;
+  border: none !important;
+  border-radius: var(--discosa-radius-lg) !important;
+  box-shadow: var(--discosa-shadow-lg) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.login-tarjeta .card-body {
+  padding: 2rem !important;
+}
+
+.login-tarjeta h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--discosa-text);
+}
+
+.btn-discosa {
+  background: var(--discosa-gradient) !important;
+  border: none !important;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.btn-discosa:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+@media (min-width: 768px) {
+  .login-marca {
+    display: flex;
+  }
+}
+
+/* 404 */
+.pagina-404 {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+
+.pagina-404-icono {
+  font-size: 5rem;
+  color: var(--discosa-primary-light);
+  margin-bottom: 1rem;
+}
+
+.pagina-404 h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--discosa-text);
+}
+
+.catalogo-publico {
+  padding: 1.5rem clamp(1rem, 3vw, 2rem);
+  background: var(--discosa-bg);
+  min-height: calc(100vh - 56px);
+}
+
+.catalogo-hero {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.catalogo-hero h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--discosa-text);
+}
+
+.dashboard-embed {
+  border-radius: var(--discosa-radius);
+  overflow: hidden;
+  box-shadow: var(--discosa-shadow);
+  border: none !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+.kpi-card {
+  border: none !important;
+  border-radius: var(--discosa-radius) !important;
+  overflow: hidden;
+}
+
+.kpi-card .card-body {
+  padding: 1.25rem 1.5rem;
+}
+
+.kpi-card h5 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.95;
+  margin-bottom: 0.5rem;
+}
+
+.kpi-card h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.chart-card {
+  border: none !important;
+  border-radius: var(--discosa-radius) !important;
+  box-shadow: var(--discosa-shadow) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.filtros-card {
+  border-radius: var(--discosa-radius) !important;
+  border: none !important;
+  box-shadow: var(--discosa-shadow) !important;
+  margin-bottom: 1.5rem;
+}

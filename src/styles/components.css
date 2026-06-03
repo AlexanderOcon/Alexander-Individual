@@ -1,0 +1,125 @@
+.color-navbar {
+  background-color: var(--discosa-primary) !important;
+  background-image: var(--discosa-gradient) !important;
+}
+
+.color-texto-marca {
+  color: var(--discosa-accent) !important;
+  font-size: 18px;
+}
+
+.nav-link-discosa-activo {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: var(--discosa-gradient) !important;
+  border: none !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  opacity: 0.92;
+  background: var(--discosa-gradient) !important;
+}
+
+.table-discosa thead {
+  background: var(--discosa-accent);
+  color: #fff;
+}
+
+.table-discosa thead th {
+  border: none;
+  font-weight: 600;
+  padding: 0.85rem 1rem;
+}
+
+.table-discosa tbody tr:hover {
+  background-color: rgba(16, 104, 219, 0.06);
+}
+
+.table-discosa {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: var(--discosa-radius);
+  overflow: hidden;
+  box-shadow: var(--discosa-shadow);
+}
+
+.tarjeta-interactiva {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--discosa-radius) !important;
+  border: 1px solid rgba(16, 104, 219, 0.1) !important;
+  box-shadow: var(--discosa-shadow) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tarjeta-interactiva:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--discosa-shadow-lg) !important;
+}
+
+.tarjeta-interactiva-cuerpo {
+  transition: opacity 150ms ease;
+}
+
+.tarjeta-interactiva-cuerpo-activo {
+  opacity: 0.4;
+}
+
+.tarjeta-interactiva-cuerpo-inactivo {
+  opacity: 1;
+}
+
+.tarjeta-interactiva-capa {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 8px;
+}
+
+.tarjeta-interactiva-botones {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.modal-content {
+  border: none;
+  border-radius: var(--discosa-radius-lg) !important;
+  box-shadow: var(--discosa-shadow-lg);
+  overflow: hidden;
+}
+
+.modal-header {
+  background: linear-gradient(
+    90deg,
+    rgba(18, 27, 150, 0.08),
+    rgba(38, 151, 204, 0.08)
+  );
+  border-bottom: 1px solid rgba(16, 104, 219, 0.15);
+}
+
+.modal-title {
+  color: var(--discosa-accent);
+  font-weight: 600;
+}
+
+.spinner-discosa {
+  color: var(--discosa-primary) !important;
+}
+
+.alert-discosa {
+  border-radius: var(--discosa-radius);
+  border: none;
+}
