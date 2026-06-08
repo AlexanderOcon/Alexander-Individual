@@ -9,6 +9,7 @@ import Paginacion from "../components/ordenamiento/Paginacion";
 import NotificacionOperacion from "../components/NotificacionOperacion";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
 import TarjetaProducto from "../components/productos/TarjetasProductos";
+import ModalQRProducto from "../components/productos/ModalQrProductos";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import LayoutPagina from "../components/layout/LayoutPagina";
@@ -23,6 +24,8 @@ const Productos = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarModalEliminacion, setMostrarModalEliminacion] = useState(false);
   const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
+  const [mostrarModalQR, setMostrarModalQR] = useState(false);
+  const [productoQR, setProductoQR] = useState(null);
 
   const [nuevoProducto, setNuevoProducto] = useState({
     nombre_producto: "",
@@ -391,6 +394,43 @@ const Productos = () => {
     }
   };
 
+  const copiarProducto = async (producto) => {
+    if (!producto) return;
+    const texto = `ID: ${producto.id_producto}
+Nombre: ${producto.nombre_producto}
+Descripción: ${producto.descripcion_producto || 'Sin descripción'}
+Precio: $${producto.precio_venta}`;
+    try {
+      await navigator.clipboard.writeText(texto);
+      setToast({
+        mostrar: true,
+        mensaje: `Producto "${producto.nombre_producto}" copiado al portapapeles`,
+        tipo: "exito",
+      });
+    } catch (err) {
+      console.error("Error al copiar:", err);
+      setToast({
+        mostrar: true,
+        mensaje: "No se pudo copiar al portapapeles",
+        tipo: "error",
+      });
+    }
+  };
+
+  const generarQRImagen = (producto) => {
+    if (!producto.url_imagen) {
+      setToast({
+        mostrar: true,
+        mensaje: "Este producto no tiene imagen asociada",
+        tipo: "advertencia"
+      });
+      return;
+    }
+
+    setProductoQR(producto);
+    setMostrarModalQR(true);
+  };
+
   const generarPDFGeneralProductos = async () => {
     try {
       const doc = new jsPDF("p", "mm", "a4");
@@ -549,6 +589,8 @@ const Productos = () => {
             abrirModalEdicion={abrirModalEdicion}
             abrirModalEliminacion={abrirModalEliminacion}
             generarPDFProducto={generarPDFProducto}
+            copiarProducto={copiarProducto}
+            generarQRImagen={generarQRImagen}
           />
         </Col>
       </Row>
@@ -600,6 +642,12 @@ const Productos = () => {
         setMostrarModalEliminacion={setMostrarModalEliminacion}
         productoAEliminar={productoAEliminar}
         eliminarProducto={eliminarProducto}
+      />
+
+      <ModalQRProducto
+        mostrar={mostrarModalQR}
+        onHide={() => setMostrarModalQR(false)}
+        producto={productoQR}
       />
     </LayoutPagina>
   );
