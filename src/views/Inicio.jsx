@@ -3,6 +3,9 @@ import { Row, Col, Card, Spinner, Form, Button } from "react-bootstrap";
 import { Chart as ChartJS, registerables } from "chart.js";
 import { supabase } from "../database/supabaseconfig";
 import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import html2canvas from "html2canvas";
 import LayoutPagina from "../components/layout/LayoutPagina";
 
 ChartJS.register(...registerables);
@@ -21,6 +24,7 @@ const Inicio = () => {
   const [fechaDesde, setFechaDesde] = useState(
     new Date().toLocaleDateString("en-CA", { timeZone: "America/Managua" })
   );
+  const graficoHoraRef = useRef(null);
   const [fechaHasta, setFechaHasta] = useState(
     new Date().toLocaleDateString("en-CA", { timeZone: "America/Managua" })
   );
@@ -37,6 +41,7 @@ const Inicio = () => {
 
   const lineChartRef = useRef(null);
   const pieChartRef = useRef(null);
+  const graficoCategoriasRef = useRef(null);
   const lineChartInstance = useRef(null);
   const pieChartInstance = useRef(null);
 
@@ -243,6 +248,116 @@ const Inicio = () => {
     }
   };
 
+  const generarPdfVentasHora = async () => {
+    try {
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      // Título y fecha
+      pdf.setFontSize(18);
+      pdf.setTextColor("#330775");
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Reporte de Ventas por Hora", 14, 15);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor("#000000");
+      pdf.setFontSize(10);
+      pdf.text(`Período: ${fechaDesde} - ${fechaHasta}`, 14, 22);
+
+      // Imagen del gráfico
+      const canvas = await html2canvas(graficoHoraRef.current);
+      const imagen = canvas.toDataURL("image/png");
+      pdf.addImage(imagen, "PNG", 10, 30, 190, 80);
+
+      // Resumen General
+      pdf.setFontSize(14);
+      pdf.setTextColor("#330775");
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Resumen General", 14, 115);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor("#000000");
+      pdf.setFontSize(10);
+      pdf.text(`Total Ventas: C$ ${estadisticas.totalVentas.toFixed(2)}`, 14, 125);
+      pdf.text(`Ventas Efectivo: C$ ${estadisticas.ventasEfectivo.toFixed(2)}`, 14, 132);
+      pdf.text(`Ventas Tarjeta: C$ ${estadisticas.ventasTarjeta.toFixed(2)}`, 14, 139);
+      pdf.text(`Cantidad Ventas: ${estadisticas.cantidadVentas}`, 14, 146);
+      pdf.text(`Productos Vendidos: ${estadisticas.productosVendidos}`, 14, 153);
+
+      // Tabla de ventas por hora
+      const filas = estadisticas.ventasPorHora.map((item) => [
+        item.hora,
+        `C$ ${item.total}`,
+      ]);
+
+      autoTable(pdf, {
+        startY: 160,
+        head: [["Hora", "Monto Acumulado"]],
+        body: filas,
+      });
+
+      // Descargar PDF
+      const fechaActual = new Date().toLocaleDateString("en-CA", {
+        timeZone: "America/Managua",
+      });
+      pdf.save(`VentasHora_${fechaDesde}_${fechaHasta}_Generado_${fechaActual}.pdf`);
+    } catch (error) {
+      console.error(error);
+      alert("Error generando PDF");
+    }
+  };
+
+  const generarPdfVentasCategoria = async () => {
+    try {
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      // Título y fecha
+      pdf.setFontSize(18);
+      pdf.setTextColor("#330775");
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Reporte de Ventas por Categoría", 14, 15);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor("#000000");
+      pdf.setFontSize(10);
+      pdf.text(`Período: ${fechaDesde} - ${fechaHasta}`, 14, 22);
+
+      // Imagen del gráfico
+      const canvas = await html2canvas(graficoCategoriasRef.current);
+      const imagen = canvas.toDataURL("image/png");
+      pdf.addImage(imagen, "PNG", 10, 30, 100, 100);
+
+      // Resumen General
+      pdf.setFontSize(14);
+      pdf.setTextColor("#330775");
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Resumen General", 14, 155);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor("#000000");
+      pdf.setFontSize(10);
+      pdf.text(`Total Ventas: C$ ${estadisticas.totalVentas.toFixed(2)}`, 14, 165);
+      pdf.text(`Monto Productos: C$ ${estadisticas.montoProductos.toFixed(2)}`, 14, 172);
+      pdf.text(`Cantidad Vendida: ${estadisticas.productosVendidos}`, 14, 179);
+
+      // Tabla de ventas por categoría
+      const filas = estadisticas.ventasPorCategoria.map((item) => [
+        item.name,
+        `C$ ${item.value.toFixed(2)}`,
+      ]);
+
+      autoTable(pdf, {
+        startY: 185,
+        head: [["Categoría", "Total Ventas"]],
+        body: filas,
+      });
+
+      // Descargar PDF
+      const fechaActual = new Date().toLocaleDateString("en-CA", {
+        timeZone: "America/Managua",
+      });
+      pdf.save(`VentasCategoria_${fechaDesde}_${fechaHasta}_Generado_${fechaActual}.pdf`);
+    } catch (error) {
+      console.error(error);
+      alert("Error generando PDF");
+    }
+  };
+
   const descargarExcel = async () => {
     try {
       setCargando(true);
@@ -410,22 +525,40 @@ const Inicio = () => {
       <Row className="g-4">
         <Col xs={12} lg={8}>
           <Card className="chart-card">
-            <Card.Body>
+            <Card.Body ref={graficoHoraRef}>
               <h5 className="mb-3">Ventas por hora</h5>
               <div style={{ position: "relative", height: "300px" }}>
                 <canvas ref={lineChartRef} />
               </div>
             </Card.Body>
+            <div className="p-3 text-center">
+              <Button
+                variant="outline-danger"
+                onClick={generarPdfVentasHora}
+              >
+                <i className="bi bi-file-earmark-pdf me-2"></i>
+                Descargar PDF
+              </Button>
+            </div>
           </Card>
         </Col>
         <Col xs={12} lg={4}>
           <Card className="chart-card">
-            <Card.Body>
+            <Card.Body ref={graficoCategoriasRef}>
               <h5 className="mb-3">Ventas por categoría</h5>
               <div style={{ position: "relative", height: "300px" }}>
                 <canvas ref={pieChartRef} />
               </div>
             </Card.Body>
+            <div className="p-3 text-center">
+              <Button
+                variant="outline-danger"
+                onClick={generarPdfVentasCategoria}
+              >
+                <i className="bi bi-file-earmark-pdf me-2"></i>
+                Descargar PDF
+              </Button>
+            </div>
           </Card>
         </Col>
       </Row>

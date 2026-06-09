@@ -180,7 +180,7 @@ const Categorias = () => {
     try {
       setCargando(true);
       const { data, error } = await supabase
-        .from("Categorias")
+        .from("categorias")
         .select("*")
         .order("id_categoria", { ascending: true });
       if (error) {
@@ -277,7 +277,7 @@ const Categorias = () => {
       }
 
       const { data, error } = await supabase
-        .from("Categorias")
+        .from("categorias")
         .insert([
           {
             nombre_categoria: nuevaCategoria.nombre_categoria,
@@ -335,7 +335,7 @@ const Categorias = () => {
       }
 
       const { error } = await supabase
-        .from("Categorias")
+        .from("categorias")
         .update({
           nombre_categoria: categoriaEditar.nombre_categoria,
           descripcion: categoriaEditar.descripcion_categoria,
@@ -477,7 +477,7 @@ Descripción: ${categoria.descripcion_categoria || 'Sin descripción'}`;
     try {
       setMostrarModalEliminacion(false);
       const { error } = await supabase
-        .from("Categorias")
+        .from("categorias")
         .delete()
         .eq("id_categoria", categoriaAEliminar.id_categoria)
         .select();
