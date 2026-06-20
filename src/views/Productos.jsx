@@ -112,7 +112,7 @@ const Productos = () => {
   const cargarCategorias = async () => {
     try {
       const { data, error } = await supabase
-        .from("Categorias")
+        .from("categorias")
         .select("*")
         .order("id_categoria", { ascending: true });
       if (error) throw error;
